@@ -5,11 +5,18 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
 
   <!-- [META:VERSION] 单点版本号：以后只改这里即可（标题/侧栏/JS 会自动同步） -->
-  <meta name="app-version" content="1.0.24" />
+  <!-- [APP:VERSION] -->
 
-  <title>运营工具箱</title>
+  <meta name="app-version" content="1.2.35" />
 
-  <style>
+  <title>运营工具箱 · Aurora</title>
+
+  <style>/* =====================================================================================
+  [UI:STYLE] v1.0.32
+  说明：仅整理与增加锚点注释；不改功能逻辑。
+===================================================================================== */
+
+
     /*
       ============================================================
       运营工具箱（单文件基线）
@@ -85,6 +92,49 @@
 
     .swap{cursor:pointer;font-size:18px;color:#2563eb;user-select:none}
     .result{margin-top:8px;font-weight:800}
+
+
+/* ===== [AMZ:RESULTS_BEAUTIFY] v1.2.31 ===== */
+.amzResGrid{
+  margin-top:12px;
+  display:grid;
+  grid-template-columns:repeat(auto-fit, minmax(160px, 1fr));
+  gap:12px;
+}
+.amzResItem{
+  border:1px solid rgba(255,255,255,.10);
+  background: rgba(255,255,255,.04);
+  border-radius:14px;
+  padding:12px 12px;
+  box-shadow: 0 8px 24px rgba(0,0,0,.18);
+  position:relative;
+  overflow:hidden;
+}
+.amzResItem::before{
+  content:"";
+  position:absolute; inset:-2px;
+  background: radial-gradient(640px 200px at 10% 0%, rgba(122,162,255,.12), transparent 60%),
+              radial-gradient(520px 160px at 95% 0%, rgba(167,139,250,.10), transparent 62%);
+  opacity:.9;
+  pointer-events:none;
+}
+.amzResK{
+  position:relative;
+  color: rgba(226,232,240,.78);
+  font-size:12px;
+  letter-spacing:.2px;
+}
+.amzResV{
+  position:relative;
+  margin-top:6px;
+  font-weight:950;
+  font-size:18px;
+  letter-spacing:.2px;
+}
+.amzResUnit{ margin-left:6px; font-size:12px; font-weight:900; color: rgba(226,232,240,.62); }
+.amzResItemBig .amzResV{ font-size:20px; }
+.amzProfit.pos, .amzMargin.pos{ color: rgba(74,222,128,.92); text-shadow: 0 1px 0 rgba(0,0,0,.35); }
+.amzProfit.neg, .amzMargin.neg{ color: rgba(248,113,113,.95); text-shadow: 0 1px 0 rgba(0,0,0,.35); }
 
     .cards{display:flex;flex-direction:column;gap:12px}
     .card{border:1px solid #e5e7eb;background:#fbfdff;border-radius:12px;padding:12px}
@@ -189,10 +239,755 @@
       .mbar{margin:-14px -12px 12px -12px}
     }
 
-  </style>
+  
+    /* ===== [UI:DESKTOP_MOBILE_MODES] v1.0.32 ===== */
+    @media (min-width: 981px){
+      .nav button{
+        font-size:16px;
+        font-weight:700;
+        letter-spacing:.2px;
+        padding:12px 12px;
+        display:flex;
+        align-items:center;
+        gap:10px;
+      }
+      .nav button .btn-txt{flex:1;}
+.nav button .btn-ic{
+        width:22px;
+        flex:0 0 22px;
+        display:inline-flex;
+        align-items:center;
+        justify-content:center;
+        font-size:18px;
+        line-height:1;
+      }
+      .brand .t{font-size:16px;font-weight:900}
+    }
+    @media (max-width: 980px){
+      .nav button{
+        display:flex;
+        align-items:center;
+        gap:8px;
+      }
+      .nav button .btn-ic{
+        width:20px;
+        flex:0 0 20px;
+        display:inline-flex;
+        align-items:center;
+        justify-content:center;
+        font-size:16px;
+        line-height:1;
+      }
+    }
+
+/* ===== [PANEL:AMZ][RATE_ROW_LAYOUT] v1.0.32 ===== */
+.panel#amazon .rateRow label{
+  flex-direction:row;
+  align-items:center;
+  gap:6px;
+}
+.panel#amazon .rateRow input{
+  width:92px;
+}
+.panel#amazon .rateRow label{
+  white-space:nowrap;
+}
+
+
+
+/* ===== [AMZ:FBA_MODE_BOXES] v1.2.30 ===== */
+.fbaRow{align-items:stretch}
+.fbaModeBox{
+  flex:1;
+  min-width:160px;
+  border:1px solid var(--border);
+  background: var(--card);
+  border-radius:10px;
+  padding:8px;
+  box-shadow: 0 3px 10px rgba(0,0,0,.10);
+  position:relative;
+  overflow:hidden;
+}
+.fbaModeTop{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  font-weight:900;
+  margin-bottom:8px;
+}
+.fbaIc{
+  width:28px;height:28px;
+  display:inline-flex;align-items:center;justify-content:center;
+  border-radius:10px;
+  background: rgba(122,162,255,.16);
+  border: 1px solid rgba(122,162,255,.22);
+}
+.fbaModeName{letter-spacing:.2px}
+.fbaModeHint{
+  margin-top:8px;
+  font-size:12px;
+  color: var(--muted);
+  padding:7px 9px;
+  border-radius:10px;
+  border:1px dashed rgba(255,255,255,.12);
+  background: rgba(255,255,255,.04);
+  line-height:1.45;
+}
+.fbaModeBox.active{
+  border-color: rgba(122,162,255,.55);
+  box-shadow: 0 0 0 3px rgba(122,162,255,.16), 0 12px 34px rgba(0,0,0,.30);
+}
+.fbaModeBox.active::before{
+  content:"";
+  position:absolute; inset:-2px;
+  background: radial-gradient(800px 220px at 15% 0%, rgba(122,162,255,.22), transparent 60%),
+              radial-gradient(700px 220px at 90% 10%, rgba(167,139,250,.18), transparent 62%);
+  pointer-events:none;
+}
+.fbaModeBox.active .fbaModeHint{
+  color: var(--text);
+  border-color: rgba(122,162,255,.38);
+  background: rgba(122,162,255,.12);
+}
+
+@media (max-width:860px){
+  .fbaModeBox{min-width: 100%;}
+}
+/* ===== [LAYOUT:TOPBAR + SIDEBAR + WORKSPACE] v1.0.51 (base 1.0.32) ===== */
+.page{display:flex;flex-direction:column;height:100vh;min-height:100vh}
+.topbar{
+  display:flex;align-items:center;justify-content:space-between;
+  gap:12px;padding:12px 14px;
+  border-bottom:1px solid rgba(17,24,39,.10);
+  background:#ffffff;
+}
+.topBrand{display:flex;flex-direction:column;gap:2px;min-width:0}
+.topTitle{font-weight:900;letter-spacing:.2px}
+.topSub{font-size:12px;color:#6b7280;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:78vw}
+.topMeta{display:flex;align-items:center;gap:10px;color:#6b7280;font-weight:800}
+.topVer{padding:6px 10px;border-radius:999px;border:1px solid #eef2f7;background:#f8fafc}
+.topVerNum{font-variant-numeric:tabular-nums}
+
+/* 关键：下方仍保持“侧边栏 + 工作区”并排 */
+.app{flex:1;height:auto;min-height:0}
+.sidebar{height:auto}
+.content{min-height:0}
+
+/* 视觉上把“运营工具箱模块”搬到顶部：隐藏左侧 brand */
+.sidebar .brand{display:none !important;}
+/* 移动端：副标题隐藏 */
+@media (max-width:720px){
+  .topSub{display:none}
+}
+
+/* ===== [TOPBAR:NO_VERSION][FONT_SCALE_UP] v1.0.52 ===== */
+/* 1) 顶部导航栏不显示版本号（版本只保留在侧边栏） */
+.topbar .topMeta{display:none !important;}
+
+/* 2) 字体整体放大一些（保持布局不乱） */
+html{font-size:16px;} /* 原来更小，这里整体提升 */
+.sidebar{font-size:15px;}
+.nav button{font-size:15px; font-weight:800;}
+.content{font-size:15px;}
+.head h2{font-size:20px;}
+.cardTitle h3{font-size:16px;}
+input, textarea, select{font-size:15px;}
+.result{font-size:15px; line-height:1.6;}
+
+/* ===== [COUNT:RISK_HINT] v1.2.3 ===== */
+#riskHint{
+  background: rgba(245,158,11,.10);
+  border: 1px solid rgba(245,158,11,.22);
+  color: rgba(243,244,246,.92);
+}
+
+/* ===== [COUNT:RISK_HINT_READABLE] v1.2.4 ===== */
+#riskHint{
+  display:block;
+  font-weight: 850;
+  line-height: 1.6;
+  letter-spacing: .1px;
+  background: rgba(245,158,11,.14);
+  border: 1px solid rgba(245,158,11,.32);
+  color: var(--text) !important;
+  text-shadow: 0 1px 0 rgba(0,0,0,.25);
+}
+
+/* ===== [COUNT:RISK_HIGHLIGHT_IN_TEXTAREA] v1.2.6 ===== */
+.hlWrap{position:relative;}
+.hlLayer{
+  position:absolute; inset:0;
+  margin:0; pointer-events:none;
+  white-space:pre-wrap; word-wrap:break-word;
+  overflow:hidden;
+  padding:12px 12px;
+  border-radius:12px;
+  font: inherit;
+  line-height: 1.6;
+  color: var(--text); /* base text color in layer */
+}
+.hlLayer mark.risk{
+  background: rgba(245, 158, 11, .45);
+  color: var(--text);
+  padding: 0 2px;
+  border-radius: 4px;
+}
+#textInputWrap textarea#textInput{
+  position:relative;
+  background: transparent !important;
+  color: transparent !important; /* hide real text, show layer text */
+  -webkit-text-fill-color: transparent !important;
+  caret-color: var(--text);
+}
+#textInputWrap textarea#textInput::placeholder{
+  color: rgba(209,213,219,.80);
+  -webkit-text-fill-color: rgba(209,213,219,.80);
+}
+/* selection style (best-effort) */
+#textInputWrap textarea#textInput::selection{background: rgba(122,162,255,.35);}
+
+/* ===== [COUNT:CARET_FIX] v1.2.7 ===== */
+/* 不再把真实文本完全透明，否则某些浏览器会隐藏光标 */
+#textInputWrap textarea#textInput{
+  color: rgba(0,0,0,0.02) !important; /* 几乎不可见，但可保持光标 */
+  -webkit-text-fill-color: rgba(0,0,0,0.02) !important;
+  caret-color: var(--text) !important; /* 明确指定光标颜色 */
+}
+/* 确保聚焦时光标可见 */
+#textInputWrap textarea#textInput:focus{
+  caret-color: var(--text) !important;
+}
+
+/* ===== [COUNT:RISK_PREVIEW_MODE] v1.2.18 ===== */
+/* 彻底取消叠层高亮（黄底/错位/光标问题的根源），只保留“预览区黄色加粗” */
+#riskColorPreview{border: 1px dashed rgba(255,255,255,.14);}
+#riskColorPreview .riskColor{ color:#f59e0b; font-weight:850; }
+textarea#textInput{
+  color: var(--text) !important;
+  -webkit-text-fill-color: var(--text) !important;
+  caret-color: var(--text) !important;
+}
+
+/* ===== [COUNT:CONTENTEDITABLE_RISK_INLINE] v1.2.19 ===== */
+.ceInput{
+  width: 100%;
+  min-height: 140px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,.10);
+  background: rgba(255,255,255,.04);
+  color: var(--text);
+  outline: none;
+  white-space: pre-wrap;
+  word-break: break-word;
+  line-height: 1.6;
+  font: inherit;
+}
+.ceInput:focus{
+  border-color: rgba(122,162,255,.45);
+  box-shadow: 0 0 0 3px rgba(122,162,255,.18);
+}
+.ceInput .riskWord{
+  color: #f59e0b;
+  font-weight: 850;
+}
+.ceInput:empty:before{
+  content: attr(data-placeholder);
+  color: rgba(209,213,219,.60);
+  pointer-events: none;
+}
+
+/* ===== [COUNT:CE_BORDER_FIX] v1.2.20 ===== */
+.ceInput{
+  border: 1px solid rgba(148,163,184,.35) !important; /* slate-400 */
+  background: rgba(255,255,255,.04);
+}
+.ceInput:hover{
+  border-color: rgba(148,163,184,.55);
+}
+.ceInput:focus{
+  border-color: #7aa2ff !important;
+  box-shadow: 0 0 0 3px rgba(122,162,255,.22) !important;
+}
+
+/* ===== [COUNT:CE_BG_UNIFY] v1.2.21 ===== */
+/* 与其他输入/卡片保持一致的背景色 */
+.ceInput{
+  background: var(--card-bg, rgba(255,255,255,.06)) !important;
+}
+
+/* ===== [COUNT:CE_BG_MATCH_INPUT] v1.2.22 ===== */
+/* 与页面中 textarea/input 的背景保持一致（当前主题为浅色：background:#fff） */
+.ceInput{
+  background: #fff !important;
+  border: 1px solid #d1d5db !important;
+}
+.ceInput:hover{ border-color:#cbd5e1 !important; }
+.ceInput:focus{
+  border-color:#7aa2ff !important;
+  box-shadow: 0 0 0 3px rgba(122,162,255,.18) !important;
+}
+
+/* =====================================================================================
+   [THEME:DARK_A] 夜视深色主题（方案A：专业夜视） v1.2.26
+   - A1：手动切换（日/夜）
+   - B1：风险词柔和琥珀黄
+===================================================================================== */
+:root{
+  --bg:#f3f4f6;
+  --panel:#ffffff;
+  --card:#fbfdff;
+  --text:#111827;
+  --muted:#6b7280;
+  --border:#e5e7eb;
+  --border-2:#eef2f7;
+  --accent:#2563eb;
+  --accent-2:#1d4ed8;
+  --risk:#f59e0b;
+  --shadow:0 8px 20px rgba(0,0,0,.08);
+}
+
+/* 主题切换按钮 */
+.themeBtn{
+  display:inline-flex; align-items:center; gap:8px;
+  padding:8px 10px;
+  border-radius:999px;
+  border:1px solid var(--border);
+  background:var(--panel);
+  cursor:pointer;
+  font-weight:850;
+  color:var(--text);
+  box-shadow:0 2px 10px rgba(0,0,0,.05);
+  user-select:none;
+}
+.themeBtn:hover{ transform:translateY(-1px); }
+.themeBtn .ic{ width:18px; display:inline-flex; justify-content:center; }
+.themeBtn .moon{ display:none; }
+.themeBtn .txt{ font-size:13px; opacity:.9; }
+
+/* 移动端：主题按钮更紧凑 */
+.iconBtn.themeIcon{ width:40px; }
+
+/* 深色主题变量 */
+body.dark{
+  --bg:linear-gradient(180deg, #070b18 0%, #0b1220 55%, #070b18 100%);
+  --panel:rgba(15, 23, 42, .62);
+  --card:rgba(17, 28, 52, .58);
+  --text:#e5e7eb;
+  --muted:#9aa4b2;
+  --border:rgba(255,255,255,.10);
+  --accent:#7aa2ff;
+  --accent2:#a78bfa;
+  --risk:#fbbf24;
+  --shadow:0 16px 46px rgba(0,0,0,.55);
+}
+
+/* ===== [AURORA:TEXT_TONE_FIX] v1.2.32 ===== */
+body.dark .hint,
+body.dark .muted{
+  color: rgba(226,232,240,.72) !important;
+}
+body.dark .hint strong,
+body.dark .muted strong{
+  color: rgba(226,232,240,.90);
+}
+
+
+
+
+/* ===== [BEAUTY:ENHANCED_UI] v1 ===== */
+body.dark{
+  /* subtle noise / vignette layer */
+}
+body.dark::before{
+  content:"";
+  position:fixed; inset:0;
+  pointer-events:none;
+  background:
+    radial-gradient(1200px 600px at 15% 10%, rgba(255,255,255,.10), transparent 55%),
+    radial-gradient(900px 500px at 85% 20%, rgba(255,255,255,.06), transparent 60%),
+    radial-gradient(900px 700px at 60% 90%, rgba(255,255,255,.05), transparent 65%),
+    linear-gradient(180deg, rgba(0,0,0,.18), rgba(0,0,0,.38));
+  opacity:.85;
+  mix-blend-mode:screen;
+  filter:saturate(1.05);
+  z-index:-1;
+}
+/* glassy panels */
+body.dark .panel{
+  background: var(--panel);
+  border: 1px solid rgba(255,255,255,.10);
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(10px) saturate(1.1);
+}
+body.dark .card,
+body.dark .box,
+body.dark .stat{
+  background: var(--card);
+  border: 1px solid rgba(255,255,255,.10);
+  box-shadow: 0 10px 24px rgba(0,0,0,.35);
+}
+body.dark .brand,
+body.dark .topbar{
+  background: rgba(15,23,42,.68);
+  border-bottom: 1px solid rgba(255,255,255,.10);
+  backdrop-filter: blur(10px) saturate(1.1);
+}
+body.dark .sidebar{
+  border-right: 1px solid rgba(255,255,255,.10);
+}
+/* richer nav buttons */
+body.dark .nav button{
+  border: 1px solid rgba(255,255,255,.10);
+  background: rgba(255,255,255,.04);
+}
+body.dark .nav button:hover{
+  background: rgba(255,255,255,.06);
+  transform: translateY(-1px);
+}
+body.dark .nav button.active{
+  border-color: rgba(255,255,255,.14);
+  box-shadow: 0 10px 24px rgba(0,0,0,.35), inset 0 0 0 2px rgba(255,255,255,.06);
+}
+/* inputs */
+body.dark input, body.dark select, body.dark textarea{
+  background: rgba(255,255,255,.04);
+  border: 1px solid rgba(255,255,255,.12);
+  color: var(--text);
+}
+body.dark input:focus, body.dark select:focus, body.dark textarea:focus{
+  border-color: rgba(122,162,255,.65);
+  box-shadow: 0 0 0 3px rgba(122,162,255,.18);
+}
+/* badges / pills */
+body.dark .badge{
+  background: rgba(255,255,255,.06);
+  border: 1px solid rgba(255,255,255,.10);
+  color: var(--muted);
+}
+body.dark .pill{
+  background: rgba(255,255,255,.06);
+  border: 1px solid rgba(255,255,255,.10);
+  color: var(--text);
+}
+body.dark .pill.over{
+  background: rgba(239,68,68,.18);
+  border-color: rgba(239,68,68,.35);
+  color: #fecaca;
+}
+/* risk highlight (B1: amber) */
+body.dark .ceInput .riskWord{ color: var(--risk); text-shadow: 0 1px 0 rgba(0,0,0,.35); }
+body.dark #riskHint{
+  background: rgba(245,158,11,.14);
+  border: 1px solid rgba(245,158,11,.28);
+  color: var(--text);
+}
+/* nice separators */
+body.dark .footer{
+  border-top: 1px solid rgba(255,255,255,.10);
+}
+
+body.dark .primary{
+  background: linear-gradient(135deg, #7aa2ff 0%, #a78bfa 100%);
+  box-shadow: 0 10px 24px rgba(0,0,0,.35);
+}
+body.dark .nav button.active{
+  background: linear-gradient(135deg, rgba(255,255,255,.07) 0%, rgba(255,255,255,.03) 70%), 
+              linear-gradient(135deg, rgba(0,0,0,.0) 0%, rgba(0,0,0,.0) 100%);
+}
+body.dark .nav button.active .btn-ic{ color:#7aa2ff; filter: drop-shadow(0 6px 10px rgba(0,0,0,.35)); }
+body.dark .swap{ color:#7aa2ff; }
+body.dark input:focus, body.dark select:focus, body.dark textarea:focus{
+  border-color: color-mix(in srgb, #7aa2ff 65%, white 0%);
+  box-shadow: 0 0 0 3px color-mix(in srgb, #7aa2ff 22%, transparent);
+}
+/* subtle gradient line under topbar */
+body.dark .topbar{ position:sticky; top:0; z-index:80; }
+body.dark .topbar::after{
+  content:"";
+  position:absolute; left:0; right:0; bottom:-1px; height:2px;
+  background: linear-gradient(90deg, transparent 0%, #7aa2ff 35%, #a78bfa 65%, transparent 100%);
+  opacity:.55;
+}
+
+
+
+/* 深色模式：基础背景与文字 */
+body{ background:var(--bg); color:var(--text); }
+.page{ background:var(--bg); color:var(--text); }
+
+/* 顶栏/侧栏/面板 */
+.topbar{
+  background:var(--panel);
+  border-bottom:1px solid var(--border);
+}
+.sidebar{
+  background:var(--panel);
+  border-right:1px solid var(--border);
+}
+.panel{
+  background:var(--panel);
+  box-shadow:var(--shadow);
+}
+.card{
+  background:var(--card);
+  border:1px solid var(--border);
+}
+body.dark .box{ background:var(--card); border:1px solid var(--border); }
+.stat{
+  background:var(--panel);
+  border:1px solid var(--border-2);
+}
+.badge,.pill{ background:rgba(148,163,184,.12); color:var(--muted); }
+body.dark .badge, body.dark .pill{ background:rgba(148,163,184,.14); color:var(--muted); }
+.pill.over{
+  background:rgba(239,68,68,.18);
+  color:#fecaca;
+  font-weight:900;
+}
+
+/* 文本色分级 */
+.hint,.muted,.footer{ color:var(--muted); }
+.brand .s{ color:var(--muted); }
+.stat .k{ color:var(--muted); }
+
+/* 导航按钮 */
+.nav button{
+  background:var(--panel);
+  border:1px solid var(--border-2);
+  color:var(--text);
+}
+.nav button:hover{ background:rgba(148,163,184,.10); }
+.nav button.active{
+  background:rgba(122,162,255,.18);
+  border-color:rgba(122,162,255,.35);
+}
+
+/* 输入控件 */
+input,select,textarea{
+  background:var(--panel);
+  color:var(--text);
+  border:1px solid rgba(148,163,184,.28);
+}
+input::placeholder, textarea::placeholder{ color:rgba(154,164,178,.75); }
+input:focus,select:focus,textarea:focus{
+  border-color:rgba(122,162,255,.55);
+  box-shadow:0 0 0 3px rgba(122,162,255,.18);
+}
+
+/* contenteditable 输入框（你稳定方案的核心） */
+body.dark .ceInput{
+  background:var(--panel) !important;
+  color:var(--text) !important;
+  border:1px solid rgba(148,163,184,.30) !important;
+}
+body.dark .ceInput:hover{ border-color:rgba(148,163,184,.46) !important; }
+body.dark .ceInput:focus{
+  border-color:var(--accent) !important;
+  box-shadow:0 0 0 3px rgba(122,162,255,.20) !important;
+}
+body.dark .ceInput:empty:before{ color:rgba(154,164,178,.70); }
+
+/* 风险词：B1 柔和琥珀黄（夜视友好） */
+.ceInput .riskWord{
+  color:var(--risk);
+  font-weight:900;
+}
+
+/* 风险提示条 */
+#riskHint{
+  background: rgba(251,191,36,.12) !important;
+  border: 1px solid rgba(251,191,36,.25) !important;
+  color: var(--text) !important;
+}
+
+/* 切换按钮：暗色时显示月亮图标 */
+body.dark .themeBtn .sun{ display:none; }
+body.dark .themeBtn .moon{ display:inline-flex; }
+body.dark .themeBtn{ border-color:var(--border); }
+
+/* iframe 边框跟随主题 */
+iframe{ border:1px solid var(--border); background:var(--panel); }
+
+
+/* ===== [HOTFIX:INTERACTION] v1.2.28 ===== */
+body.dark .panel, body.dark .content, body.dark .nav button, body.dark .seg button{ pointer-events:auto; }
+
+/* ===== [AMZ:UNIFY_STYLE] v1.2.32 ===== */
+.panel#amazon h3{
+  font-size:14px;
+  font-weight:900;
+  color: rgba(226,232,240,.92);
+  margin-top:16px;
+  margin-bottom:10px;
+}
+body.dark .panel#amazon label{
+  background: rgba(255,255,255,.03);
+  border: 1px solid rgba(255,255,255,.10);
+  border-radius: 12px;
+  padding: 10px 10px;
+}
+body.dark .panel#amazon label > input,
+body.dark .panel#amazon label > select{
+  background: rgba(0,0,0,.18) !important;
+  border: 1px solid rgba(255,255,255,.12) !important;
+}
+body.dark .panel#amazon .rateRow label{
+  background: rgba(255,255,255,.02);
+}
+body.dark .panel#amazon .amzResItem{
+  border:1px solid rgba(255,255,255,.12);
+  background: rgba(255,255,255,.035);
+}
+
+
+
+/* =====================================================================================
+   [LIGHT:AMZ_POLISH] v1.2.34
+   说明：仅优化白天模式（背景色/文字色）；不改布局/交互/JS；夜间模式(Aurora)不受影响。
+   目标：恢复 v1.2.22 那种干净、协调、工具型观感（重点：亚马逊核算模块）。
+===================================================================================== */
+
+/* 白天模式判定：body 没有 .dark */
+body:not(.dark){
+  background:#f3f4f6;
+  color:#111827;
+}
+body:not(.dark) .topbar{
+  background:#ffffff;
+  border-bottom:1px solid rgba(17,24,39,.10);
+}
+body:not(.dark) .sidebar{
+  background:#ffffff;
+  border-right:1px solid #e5e7eb;
+}
+
+/* —— Amazon 核算：输入区（让“卡片感”更统一） —— */
+body:not(.dark) .panel#amazon .hint{ color:#6b7280 !important; }
+body:not(.dark) .panel#amazon h3{
+  color:#111827 !important;
+}
+body:not(.dark) .panel#amazon label{
+  background:#ffffff !important;
+  border:1px solid #e5e7eb !important;
+  border-radius:12px;
+  padding:10px 10px;
+}
+body:not(.dark) .panel#amazon label > input,
+body:not(.dark) .panel#amazon label > select{
+  background:#ffffff !important;
+  border:1px solid #d1d5db !important;
+  color:#111827 !important;
+}
+body:not(.dark) .panel#amazon .rateRow label{
+  background:#f9fafb !important;
+  border-color:#e5e7eb !important;
+}
+
+/* —— FBA 三块模式：白天去掉“夜视玻璃感”，改为清爽工具风 —— */
+body:not(.dark) .fbaModeBox{
+  background:#ffffff !important;
+  border:1px solid #e5e7eb !important;
+  box-shadow:0 6px 16px rgba(17,24,39,.08) !important;
+}
+body:not(.dark) .fbaModeHint{
+  color:#6b7280 !important;
+  border:1px dashed #e5e7eb !important;
+  background:#f9fafb !important;
+}
+body:not(.dark) .fbaModeBox.active{
+  border-color:rgba(37,99,235,.35) !important;
+  box-shadow:0 0 0 3px rgba(37,99,235,.12), 0 10px 22px rgba(17,24,39,.10) !important;
+}
+body:not(.dark) .fbaModeBox.active::before{
+  content:none !important;
+}
+body:not(.dark) .fbaIc{
+  background:rgba(37,99,235,.10) !important;
+  border:1px solid rgba(37,99,235,.18) !important;
+}
+
+/* —— 结果区：从“夜视卡片”改回白天清爽结果卡 —— */
+body:not(.dark) .amzResItem{
+  border:1px solid #e5e7eb !important;
+  background:#ffffff !important;
+  box-shadow:0 10px 22px rgba(17,24,39,.08) !important;
+}
+body:not(.dark) .amzResItem::before{ content:none !important; }
+body:not(.dark) .amzResK{ color:#6b7280 !important; }
+body:not(.dark) .amzResV{ color:#111827 !important; }
+body:not(.dark) .amzResUnit{ color:#9ca3af !important; }
+body:not(.dark) .amzProfit.pos,
+body:not(.dark) .amzMargin.pos,
+body:not(.dark) .amzProfit.neg,
+body:not(.dark) .amzMargin.neg{
+  text-shadow:none !important;
+}
+
+
+/* =========================
+   v1.2.35 — Aurora night text brightness boost
+   Scope: text color ONLY (no layout / no JS)
+========================= */
+body.dark,
+body[data-theme="dark"]{
+  --aurora-text-1: #e5e7eb;  /* primary */
+  --aurora-text-2: #cbd5e1;  /* secondary */
+  --aurora-text-3: #94a3b8;  /* muted */
+}
+
+body.dark :where(p,span,div,li,label,input,textarea,select),
+body[data-theme="dark"] :where(p,span,div,li,label,input,textarea,select){
+  color: var(--aurora-text-1);
+}
+
+body.dark :where(small,.hint,.desc,.note,.sub),
+body[data-theme="dark"] :where(small,.hint,.desc,.note,.sub){
+  color: var(--aurora-text-2);
+}
+
+body.dark ::placeholder,
+body[data-theme="dark"] ::placeholder{
+  color: var(--aurora-text-3);
+}
+
+</style>
 </head>
 
 <body>
+<div class="page">
+<!-- =========================
+     [HTML:TOPBAR]
+========================= -->
+<header class="topbar">
+  <div class="topBrand">
+    <div class="topTitle">运营工具箱</div>
+    <div class="topSub">单位换算 · 字符处理 · Listing 翻译 · 亚马逊核算</div>
+  </div>
+  <div class="topActions">
+    <button class="themeBtn" id="themeToggle" type="button" aria-label="切换夜视模式">
+      <span class="ic sun">☀</span><span class="ic moon">🌙</span><span class="txt">夜视</span>
+    </button>
+  </div>
+  <div class="topMeta">
+    <span class="topVer">v<span class="topVerNum">1.2.27</span></span>
+  </div>
+</header>
+<!-- =====================================================================================
+  Amazon 运营工具箱（单文件）
+  版本：v1.0.32
+  结构锚点：
+    [APP:VERSION] 版本信息
+    [UI:LAYOUT]   页面结构
+    [UI:STYLE]    CSS 样式
+    [NAV]         左侧导航
+    [PANEL:UNIT]  单位换算
+    [PANEL:COUNT] 字符处理
+    [PANEL:TRAN]  翻译
+    [PANEL:AMZ]   亚马逊核算
+    [UTIL]        通用函数
+    [BOOT]        初始化入口
+===================================================================================== -->
 <div class="app">
 
   <!-- [HTML:BACKDROP] Mobile sidebar backdrop -->
@@ -208,13 +1003,17 @@
     </div>
 
     <div class="nav">
-      <button data-panel="unit" class="active">单位换算</button>
-      <button data-panel="count">字符处理</button>
-      <button data-panel="translate">翻译</button>
-      <button data-panel="amazon">亚马逊核算</button>
+      <!-- [PANEL:UNIT] -->
+<button data-panel="unit" class="active"><span class="btn-ic">📏</span><span class="btn-txt">单位换算</span></button>
+      <!-- [PANEL:COUNT] -->
+<button data-panel="count"><span class="btn-ic">🔤</span><span class="btn-txt">字符处理</span></button>
+      <!-- [PANEL:TRAN] -->
+<button data-panel="translate"><span class="btn-ic">🌐</span><span class="btn-txt">翻译</span></button>
+      <!-- [PANEL:AMZ] -->
+<button data-panel="amazon"><span class="btn-ic">🧮</span><span class="btn-txt">亚马逊核算</span></button>
     </div>
 
-    <div class="footer"><span>版本</span><b id="verText">1.0.24</b></div>
+    <div class="footer"><span>版本</span><b id="verText">1.2.35</b></div>
   </aside>
 
   <main class="content">
@@ -225,7 +1024,8 @@
     <div class="mbar">
       <button class="iconBtn" id="btnMenu" aria-label="打开菜单">☰</button>
       <div class="mtitle">运营工具箱</div>
-      <div class="mver">v<span id="verTextM">1.0.24</span></div>
+      <div class="mver">v<span id="verTextM">1.2.35</span></div>
+      <button class="iconBtn themeIcon" id="themeToggleM" aria-label="切换夜视模式">🌙</button>
     </div>
 
     <!-- =========================
@@ -289,12 +1089,12 @@
       <div class="split">
         <div class="box">
           <div class="boxHead">
-            <h3>字符数量统计</h3>
+            <h3>字符数量统计 & 风险词提示</h3>
             <span class="badge">红线：200 / 250 / 1000</span>
           </div>
-          <textarea id="textInput" placeholder="粘贴/输入标题、五点、描述等" style="width:100%;height:170px"></textarea>
-
-          <div class="row" style="margin-top:10px">
+          <div id="textInputCE" class="ceInput" contenteditable="true" data-placeholder="粘贴或输入需要统计的文本…"></div>
+<textarea id="textInput" style="display:none"></textarea>
+<div class="row" style="margin-top:10px">
             <span class="pill" id="p200">Title 200</span>
             <span class="pill" id="p250">Bullet 250</span>
             <span class="pill" id="p1000">Description 1000</span>
@@ -307,6 +1107,7 @@
             <div class="stat"><div class="k">中文字符</div><div class="v" id="cZh">0</div></div>
             <div class="stat"><div class="k">数字</div><div class="v" id="cNum">0</div></div>
           </div>
+          <div class="hint" id="riskHint" style="display:none" style="margin-top:10px;display:none"></div>
           <div class="muted" style="margin-top:8px">说明：红线按“总字符数”判断。</div>
         </div>
 
@@ -407,7 +1208,7 @@
         <label>采购价<input id="buyCost" type="number" step="0.01" placeholder="8.50" /></label>
       </div>
 
-      <div class="row">
+      <div class="row rateRow">
         <label>1 USD=<input id="usdToCny" type="number" step="0.0001" value="7.2000" />CNY</label>
         <label>1 EUR=<input id="eurToCny" type="number" step="0.0001" value="7.9000" />CNY</label>
         <label>1 GBP=<input id="gbpToCny" type="number" step="0.0001" value="9.1000" />CNY</label>
@@ -439,26 +1240,49 @@
       </div>
 
       <h3>FBA（简化）</h3>
-      <div class="row">
-        <label>方式<select id="fbaMode"><option value="amount" selected>固定金额</option><option value="percent">按售价%</option><option value="auto">按计费重</option></select></label>
-        <label>固定金额(按售价币种)<input id="fbaAmount" type="number" step="0.01" value="0" /></label>
-        <label>百分比(%)<input id="fbaPct" type="number" step="0.01" value="0" /></label>
-        <label>每kg费用(按售价币种)<input id="fbaPerKg" type="number" step="0.01" value="0" /></label>
-        <label>固定FBA(按售价币种)<input id="fbaFixed" type="number" step="0.01" value="0" /></label>
+      <div class="row fbaRow" id="fbaRow">
+        <div class="fbaModeBox active" data-mode="amount">
+          <div class="fbaModeTop"><span class="fbaIc">💰</span><span class="fbaModeName">固定金额</span></div>
+          <label>固定金额(按售价币种)<input id="fbaAmount" type="number" step="0.01" placeholder="0" /></label>
+          <div class="fbaModeHint">输入固定 FBA 金额；输入即自动选中该模式</div>
+        </div>
+
+        <div class="fbaModeBox" data-mode="percent">
+          <div class="fbaModeTop"><span class="fbaIc">％</span><span class="fbaModeName">按售价%</span></div>
+          <label>百分比(%)<input id="fbaPct" type="number" step="0.01" placeholder="0" /></label>
+          <div class="fbaModeHint">输入百分比（如 12）即按售价比例计算</div>
+        </div>
+
+        <div class="fbaModeBox" data-mode="auto">
+          <div class="fbaModeTop"><span class="fbaIc">⚖️</span><span class="fbaModeName">按计费重</span></div>
+          <div class="row" style="gap:10px">
+            <label>每kg费用(按售价币种)<input id="fbaPerKg" type="number" step="0.01" placeholder="0" /></label>
+            <label>固定FBA(按售价币种)<input id="fbaFixed" type="number" step="0.01" placeholder="0" /></label>
+          </div>
+          <div class="fbaModeHint">输入任一项即按「计费重×每kg + 固定FBA」计算</div>
+        </div>
       </div>
 
       <h3>结果（实时）</h3>
-      <div style="margin-top:10px;display:flex;flex-wrap:wrap;gap:14px">
-        <div class="result">计费重：<span id="oChargeW">0</span> kg</div>
-        <div class="result">头程：<span id="oShip">0</span></div>
-        <div class="result">佣金：<span id="oRef">0</span></div>
-        <div class="result">VAT：<span id="oVat">0</span></div>
-        <div class="result">广告：<span id="oAd">0</span></div>
-        <div class="result">FBA：<span id="oFba">0</span></div>
-      </div>
-      <div style="margin-top:10px;display:flex;flex-wrap:wrap;gap:14px">
-        <div class="result">利润：<span id="oProfit">0</span></div>
-        <div class="result">利润率：<span id="oMargin">0%</span></div>
+      <div class="amzResGrid">
+        <div class="amzResItem">
+          <div class="amzResK">计费重</div>
+          <div class="amzResV"><span id="oChargeW">0</span><span class="amzResUnit">kg</span></div>
+        </div>
+        <div class="amzResItem"><div class="amzResK">头程</div><div class="amzResV"><span id="oShip">0</span></div></div>
+        <div class="amzResItem"><div class="amzResK">佣金</div><div class="amzResV"><span id="oRef">0</span></div></div>
+        <div class="amzResItem"><div class="amzResK">VAT</div><div class="amzResV"><span id="oVat">0</span></div></div>
+        <div class="amzResItem"><div class="amzResK">广告</div><div class="amzResV"><span id="oAd">0</span></div></div>
+        <div class="amzResItem"><div class="amzResK">FBA</div><div class="amzResV"><span id="oFba">0</span></div></div>
+
+        <div class="amzResItem amzResItemBig">
+          <div class="amzResK">利润</div>
+          <div class="amzResV"><span id="oProfit" class="amzProfit">0</span></div>
+        </div>
+        <div class="amzResItem amzResItemBig">
+          <div class="amzResK">利润率</div>
+          <div class="amzResV"><span id="oMargin" class="amzMargin">0%</span></div>
+        </div>
       </div>
       <div class="hint" id="amazonNote"></div>
     </section>
@@ -466,7 +1290,8 @@
   </main>
 </div>
 
-<script>
+<script>/* [APP:CORE] v1.0.32 - 锚点整理，不改功能 */
+
 (() => {
   'use strict';
 
@@ -511,6 +1336,56 @@
     }
     if (cur) out.push(cur);
     return out;
+  };
+
+
+  /* =========================
+     [JS:THEME] 夜视深色主题（方案A）v1.2.26
+     - A1 手动切换（日/夜按钮）
+     - 默认：夜视开启（本文件为夜视版）
+  ========================= */
+  const Theme = {
+    key: 'toolbox_theme_mode',
+    mode: 'dark', // 'dark' | 'light'
+    apply(mode) {
+      Theme.mode = (mode === 'light') ? 'light' : 'dark';
+      document.body.classList.toggle('dark', Theme.mode === 'dark');
+
+      const btn = $('themeToggle');
+      if (btn) btn.setAttribute('aria-label', Theme.mode === 'dark' ? '切换到日间模式' : '切换到夜视模式');
+
+      const btnM = $('themeToggleM');
+      if (btnM) btnM.textContent = Theme.mode === 'dark' ? '☀' : '🌙';
+
+      // 顶部按钮文案
+      const txt = document.querySelector('#themeToggle .txt');
+      if (txt) txt.textContent = Theme.mode === 'dark' ? '夜视' : '日间';
+    },
+    load() {
+      try {
+        const v = localStorage.getItem(Theme.key);
+        if (v === 'light' || v === 'dark') return v;
+      } catch {}
+      return null;
+    },
+    save() {
+      try { localStorage.setItem(Theme.key, Theme.mode); } catch {}
+    },
+    toggle() {
+      Theme.apply(Theme.mode === 'dark' ? 'light' : 'dark');
+      Theme.save();
+    },
+    init() {
+      // 本文件默认夜视；如用户之前存过偏好，则以偏好为准
+      const saved = Theme.load();
+      Theme.apply(saved || 'dark');
+
+      const btn = $('themeToggle');
+      if (btn) btn.addEventListener('click', Theme.toggle);
+
+      const btnM = $('themeToggleM');
+      if (btnM) btnM.addEventListener('click', Theme.toggle);
+    },
   };
 
   /* =========================
@@ -637,6 +1512,10 @@
       Unit.updateFx();
     },
     init() {
+      // v1.2.6 风险词高亮层滚动同步
+      const __ta = $('textInput');
+      if(__ta){ __ta.addEventListener('scroll', ()=>{ if(Count.updateRiskHighlight) Count.updateRiskHighlight(__ta.value); }); }
+
       ['lenVal','lenFrom','lenTo'].forEach(id => $(id).addEventListener('input', Unit.updateLen));
       ['lenFrom','lenTo'].forEach(id => $(id).addEventListener('change', Unit.updateLen));
       $('swapLen').addEventListener('click', () => Unit.swap('lenFrom','lenTo', Unit.updateLen));
@@ -657,6 +1536,24 @@
       Unit.updateLen();
       Unit.updateWt();
       Unit.updateFx();
+
+// v1.2.19：contenteditable 输入框（内联高亮风险词）
+const ce = $('textInputCE');
+const ta = $('textInput');
+if (ce && ta){
+  const onChange = ()=>{ Count.syncCEToTextareaAndHighlight(); Count.update(); };
+  ce.addEventListener('input', onChange);
+  ce.addEventListener('keyup', onChange);
+  ce.addEventListener('click', ()=>{ /* 仅刷新提示不改内容 */ });
+  // 纯文本粘贴
+  ce.addEventListener('paste', (e)=>{
+    e.preventDefault();
+    const text = (e.clipboardData || window.clipboardData).getData('text/plain');
+    document.execCommand('insertText', false, text);
+  });
+  // 初次同步
+  setTimeout(()=>{ Count.syncCEToTextareaAndHighlight(); Count.update(); }, 0);
+}
     },
   };
 
@@ -669,6 +1566,136 @@
       $('p250').classList.toggle('over', total > Config.limits.bullet);
       $('p1000').classList.toggle('over', total > Config.limits.desc);
     },
+    /* ---- 合规/高风险词提示（嵌入字符数量统计） v1.2.3 ---- */
+riskWords: [
+      'best',
+      'top',
+      'top-rated',
+      'no.1',
+      '#1',
+      'number one',
+      'ultimate',
+      'perfect',
+      'flawless',
+      'unbeatable',
+      'premium',
+      'highest quality',
+      'superior',
+      'better',
+      'better than',
+      'better than others',
+      'most',
+      'world\'s',
+      'leading',
+      'exclusive',
+      'guarantee',
+      'guaranteed',
+      'warranty',
+      'lifetime warranty',
+      'money back',
+      'refund',
+      'risk free',
+      'no risk',
+      '100% satisfaction',
+      'satisfaction guaranteed',
+      'forever',
+      'free',
+      'bonus',
+      'gift',
+      'discount',
+      'sale',
+      'save big',
+      'cheap',
+      'lowest price',
+      'limited time',
+      'special offer',
+      'deal',
+      'official',
+      'officially',
+      'amazon',
+      'prime',
+      'amazon\'s choice',
+      'amazons choice',
+      'best seller',
+      'bestseller',
+      'cure',
+      'treat',
+      'heal',
+      'prevent',
+      'diagnose',
+      'therapy',
+      'therapeutic',
+      'medical',
+      'medical grade',
+      'clinically proven',
+      'clinically tested',
+      'antibacterial',
+      'antiviral',
+      'kills bacteria',
+      'kills viruses',
+      'sterilize',
+      'sterilises',
+      'disinfect',
+      'disinfectant',
+      'pain relief',
+      'anti-inflammatory',
+      'relieve pain',
+      'safe',
+      'safety',
+      'certified',
+      'certificate',
+      'approved',
+      'fda',
+      'ce',
+      'rohs',
+      'ul listed',
+      'lab tested',
+      'tested',
+      'non-toxic',
+      'toxin free',
+      'bpa free',
+      'lead free',
+      'sex',
+      'adult',
+      'erotic',
+      'drug',
+      'cannabis',
+      'thc',
+      'cbd',
+      'weapon',
+      'gun',
+      'competitor',
+      'brand',
+      'better than competitors',
+      'beats'
+    ],
+findRisks(text) {
+  const t = (text || '').toLowerCase();
+  const hits = [];
+  for (let i = 0; i < Count.riskWords.length; i++) {
+    const w = Count.riskWords[i];
+    if (!w) continue;
+    if (t.includes(w)) hits.push(w);
+  }
+  // 去重
+  return Array.from(new Set(hits));
+},
+updateRiskHint(text) {
+  const box = $('riskHint');
+  if (!box) return;
+  const hits = Count.findRisks(text);
+  if (!hits.length){
+    box.style.display = 'none';
+    box.textContent = '';
+    return;
+  }
+  box.style.display = 'block';
+  box.textContent = `⚠️ 高风险词提示：检测到 ${hits.slice(0,16).join(', ')}${hits.length>8?'…':''}（仅提示，不代表一定违规）`;
+},
+
+// v1.2.30 兼容兜底：旧叠层高亮函数在当前版本不再需要，保留空实现避免调用时报错
+updateRiskHighlight(text){ /* noop */ },
+
     update() {
       const t = $('textInput').value || '';
       const total = t.length;
@@ -694,7 +1721,121 @@
       $('cNum').textContent = String(numCount);
 
       Count.setPills(total);
-    },
+
+      // v1.2.18 风险词预览（当前已不使用叠层预览；保留钩子以兼容旧版本）
+      // if (typeof Count.updateRiskColor === 'function') Count.updateRiskColor(t);
+
+      // v1.2.3 合规/高风险词提示（嵌入数量统计）
+      Count.updateRiskHint(t);
+
+      // 兼容：部分美化版移除了旧的 risk highlight layer，这里做防御式调用，避免脚本中断
+      if (typeof Count.updateRiskHighlight === 'function') Count.updateRiskHighlight(t);
+},
+
+
+updateRiskColor(text){
+  var box = $('riskColorPreview');
+  if(!box) return;
+  var raw = (text||'').toString();
+  if(!raw){
+    box.style.display='none';
+    box.innerHTML='';
+    return;
+  }
+  var safe = raw.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  var words = (Count.riskWords||[]).filter(Boolean).map(function(w){return w.toString();})
+    .sort(function(a,b){return b.length-a.length;});
+  if(!words.length){
+    box.style.display='none'; box.innerHTML=''; return;
+  }
+  var esc = function(s){return s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');};
+  var re2 = new RegExp('(' + words.map(esc).join('|') + ')','gi');
+  var html = safe.replace(re2, '<span class="riskColor">$1</span>');
+  if (html === safe){
+    box.style.display='none';
+    box.innerHTML='';
+    return;
+  }
+  box.style.display='block';
+  box.innerHTML = '风险词预览（黄色加粗）：\n' + html;
+},
+
+/* ---- v1.2.19：contenteditable 输入框内联高亮风险词 ---- */
+_ceUpdating: false,
+getCEText(){
+  const ce = $('textInputCE');
+  return ce ? (ce.innerText || '').replace(/\u00A0/g,' ') : '';
+},
+// 获取当前光标在纯文本中的偏移（字符数）
+getCaretOffsetInCE(){
+  const ce = $('textInputCE');
+  const sel = window.getSelection && window.getSelection();
+  if(!ce || !sel || sel.rangeCount===0) return 0;
+  const range = sel.getRangeAt(0).cloneRange();
+  range.selectNodeContents(ce);
+  range.setEnd(sel.getRangeAt(0).endContainer, sel.getRangeAt(0).endOffset);
+  return range.toString().length;
+},
+// 将光标恢复到纯文本偏移处
+setCaretOffsetInCE(offset){
+  const ce = $('textInputCE');
+  const sel = window.getSelection && window.getSelection();
+  if(!ce || !sel) return;
+  let current = 0;
+  const walker = document.createTreeWalker(ce, NodeFilter.SHOW_TEXT, null);
+  let node;
+  while((node = walker.nextNode())){
+    const next = current + node.nodeValue.length;
+    if(offset <= next){
+      const r = document.createRange();
+      r.setStart(node, Math.max(0, offset - current));
+      r.collapse(true);
+      sel.removeAllRanges();
+      sel.addRange(r);
+      return;
+    }
+    current = next;
+  }
+  // fallback: end
+  const r = document.createRange();
+  r.selectNodeContents(ce);
+  r.collapse(false);
+  sel.removeAllRanges();
+  sel.addRange(r);
+},
+// 根据 riskWords 渲染高亮 HTML
+renderRiskHighlight(text){
+  const esc = (s)=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  let safe = esc(text || '');
+  const words = (Count.riskWords||[]).filter(Boolean).map(w=>w.toString()).sort((a,b)=>b.length-a.length);
+  if(!words.length) return safe;
+  const escRe = (s)=>s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+  const re2 = new RegExp('(' + words.map(escRe).join('|') + ')', 'gi');
+  safe = safe.replace(re2, '<span class="riskWord">$1</span>');
+  // 保留换行
+  return safe.replace(/\n/g,'<br>');
+},
+syncCEToTextareaAndHighlight(){
+  const ce = $('textInputCE');
+  const ta = $('textInput');
+  if(!ce || !ta) return;
+  if(Count._ceUpdating) return;
+  Count._ceUpdating = true;
+
+  const plain = Count.getCEText();
+  const caret = Count.getCaretOffsetInCE();
+
+  // 同步给原逻辑 textarea
+  ta.value = plain;
+
+  // 高亮渲染（会重写 innerHTML）
+  ce.innerHTML = Count.renderRiskHighlight(plain);
+
+  // 恢复光标
+  Count.setCaretOffsetInCE(caret);
+
+  Count._ceUpdating = false;
+},
 
     /* ---- Title Case：B 规则（简化版） ---- */
     isAllCapsShort(token) {
@@ -769,10 +1910,14 @@
     },
     clear() {
       $('textInput').value = '';
+            const ce = $('textInputCE'); if(ce){ ce.innerHTML=''; }
+if($('riskColorPreview')){ $('riskColorPreview').style.display='none'; $('riskColorPreview').innerHTML=''; }
       $('titleIn').value = '';
       $('titleOut').value = '';
       Count.update();
-    },
+          if($('riskHint')){ $('riskHint').style.display='none'; $('riskHint').textContent=''; }
+          if($('')) $('').textContent='';
+},
     init() {
       $('textInput').addEventListener('input', Count.update);
       $('titleIn').addEventListener('input', Count.applyTitle);
@@ -872,6 +2017,31 @@
       const r = FX.rateToCny(cur);
       return r > 0 ? cny / r : 0;
     },
+    /* ---- FBA 模式（去掉下拉框，靠“输入/聚焦”自动选中） v1.2.30 ---- */
+    fbaMode: 'amount', // 'amount' | 'percent' | 'auto'
+    setFbaMode(mode) {
+      Amazon.fbaMode = (mode === 'percent' || mode === 'auto') ? mode : 'amount';
+      const row = $('fbaRow');
+      if (!row) return;
+      row.querySelectorAll('.fbaModeBox').forEach(box => {
+        box.classList.toggle('active', box.dataset.mode === Amazon.fbaMode);
+      });
+    },
+    detectFbaMode() {
+      // 1) 若之前已选中（聚焦/输入触发），直接用
+      if (Amazon.fbaMode) return Amazon.fbaMode;
+
+      // 2) 否则根据当前值做兜底判断
+      const amount = num($('fbaAmount')?.value);
+      const pct = num($('fbaPct')?.value);
+      const per = num($('fbaPerKg')?.value);
+      const fixed = num($('fbaFixed')?.value);
+
+      if (pct > 0) return 'percent';
+      if (per > 0 || fixed > 0) return 'auto';
+      if (amount > 0) return 'amount';
+      return 'amount';
+    },
     update() {
       const sellCur = $('sellCur').value;
       const buyCur = $('buyCur').value;
@@ -898,7 +2068,7 @@
       const adCny = sellCny * (num($('adPct').value) / 100);
       const retCny = sellCny * (num($('retRate').value) / 100);
 
-      const mode = $('fbaMode').value;
+      const mode = Amazon.detectFbaMode();
       let fbaCny = 0;
       if (mode === 'percent') {
         fbaCny = sellCny * (num($('fbaPct').value) / 100);
@@ -922,6 +2092,13 @@
       $('oFba').textContent = fmt(sellCur, Amazon.fromCny(fbaCny, sellCur));
       $('oProfit').textContent = fmt(sellCur, Amazon.fromCny(profitCny, sellCur));
       $('oMargin').textContent = `${(margin * 100).toFixed(2)}%`;
+      // v1.2.31：利润正负颜色提示
+      try{
+        const pEl = $('oProfit');
+        const mEl = $('oMargin');
+        if(pEl){ pEl.classList.toggle('pos', profitCny > 0); pEl.classList.toggle('neg', profitCny < 0); }
+        if(mEl){ mEl.classList.toggle('pos', margin > 0); mEl.classList.toggle('neg', margin < 0); }
+      }catch{}
 
       $('amazonNote').textContent = sell > 0
         ? `说明：退货成本按“退货率×售价”做了简化估算（当前 ${($('retRate').value || '0')}%）。如需更精细，可再加“退货损失占比/处理费”。`
@@ -946,13 +2123,12 @@
       $('vatPct').value = '19';
       $('retRate').value = '5';
       $('adPct').value = '15';
+      $('fbaAmount').value = '';
+      $('fbaPct').value = '';
+      $('fbaPerKg').value = '';
+      $('fbaFixed').value = '';
 
-      $('fbaMode').value = 'amount';
-      $('fbaAmount').value = '0';
-      $('fbaPct').value = '0';
-      $('fbaPerKg').value = '0';
-      $('fbaFixed').value = '0';
-
+      Amazon.setFbaMode('amount');
       Amazon.update();
     },
     init() {
@@ -962,11 +2138,44 @@
         'wtKg','lenCm','widCm','heiCm',
         'volDiv','shipPerKg','shipFixed',
         'refPct','vatPct','retRate','adPct',
-        'fbaMode','fbaAmount','fbaPct','fbaPerKg','fbaFixed'
+        'fbaAmount','fbaPct','fbaPerKg','fbaFixed'
       ];
-      ids.forEach(id => $(id).addEventListener('input', Amazon.update));
-      ['sellCur','buyCur','fbaMode'].forEach(id => $(id).addEventListener('change', Amazon.update));
-      $('clearAmazon').addEventListener('click', Amazon.clear);
+      ids.forEach(id => { const el = $(id); if(!el) return; el.addEventListener('input', Amazon.update); el.addEventListener('change', Amazon.update); el.addEventListener('keyup', Amazon.update); });
+
+      // v1.2.30：FBA 模式不再用下拉框，改为“输入/聚焦即选中”
+      const fbaMap = { amount:['fbaAmount'], percent:['fbaPct'], auto:['fbaPerKg','fbaFixed'] };
+      Object.entries(fbaMap).forEach(([mode, arr])=>{
+        arr.forEach(id=>{
+          const el = $(id);
+          if(!el) return;
+          el.addEventListener('focus', ()=> Amazon.setFbaMode(mode));
+          el.addEventListener('input', ()=> Amazon.setFbaMode(mode));
+          el.addEventListener('change', ()=> Amazon.setFbaMode(mode));
+        });
+      });
+      Amazon.setFbaMode(Amazon.detectFbaMode());
+
+      // v1.2.31：点击整张卡片也可切换模式（并自动聚焦到该卡片的第一个输入框）
+      try{
+        const row = $('fbaRow');
+        if(row && !row.__cardClick){
+          row.__cardClick = true;
+          row.querySelectorAll('.fbaModeBox').forEach(box=>{
+            box.addEventListener('click', (e)=>{
+              // 输入框本身点击不额外处理（避免重复 focus）
+              const tag = (e.target && e.target.tagName) ? e.target.tagName.toLowerCase() : '';
+              if(tag === 'input' || tag === 'textarea' || tag === 'select') return;
+              const mode = box.dataset.mode;
+              Amazon.setFbaMode(mode);
+              const first = box.querySelector('input');
+              if(first) first.focus();
+              Amazon.update();
+            });
+          });
+        }
+      }catch{}
+
+      const __ca=$('clearAmazon'); if(__ca) __ca.addEventListener('click', Amazon.clear);
       Amazon.update();
     },
   };
@@ -1023,6 +2232,7 @@
       if (verElM) verElM.textContent = APP_VERSION;
     },
     init() {
+      Theme.init();
       App.syncVersionUI();
       App.initNav();
 
@@ -1030,6 +2240,32 @@
       Count.init();
       Translate.init();
       Amazon.init();
+
+      // [HOTFIX] v1.2.28 Aurora: ensure Translate tabs & Amazon calc always respond even if individual listeners fail
+      // 1) Translate: delegated click fallback
+      try {
+        const seg = document.getElementById('tSeg');
+        if (seg && !seg.__delegated) {
+          seg.__delegated = true;
+          seg.addEventListener('click', (ev) => {
+            const btn = ev.target && ev.target.closest && ev.target.closest('button[data-t]');
+            if (!btn) return;
+            Translate.setTab(btn.dataset.t);
+          });
+        }
+      } catch {}
+
+      // 2) Amazon: delegated input/change fallback (covers any missed bindings)
+      try {
+        const amz = document.getElementById('amazon');
+        if (amz && !amz.__delegated) {
+          amz.__delegated = true;
+          const fn = () => Amazon.update();
+          amz.addEventListener('input', fn);
+          amz.addEventListener('change', fn);
+          amz.addEventListener('keyup', fn);
+        }
+      } catch {}
 
       // 启动时：先读本地缓存，再尝试拉取最新汇率
       const last = FX.load();
@@ -1051,5 +2287,34 @@
   document.addEventListener('DOMContentLoaded', App.init);
 })();
 </script>
+<script>/* [NAV:ICONS] v1.0.32 - 安全追加图标 */
+
+  // ===== [NAV:ICONS] v1.0.32 - non-destructive icon prepend =====
+  (function(){
+    const iconMap = {
+      unit: "🧮",        // 单位换算
+      count: "🔤",       // 字符处理
+      translate: "🌐",   // 翻译
+      amazon: "📦"       // 亚马逊核算
+    };
+    function ensureIcons(){
+      document.querySelectorAll(".nav button[data-panel]").forEach(btn=>{
+        if(btn.querySelector(".btn-ic")) return;
+        const key = btn.getAttribute("data-panel");
+        const ic = document.createElement("span");
+        ic.className = "btn-ic";
+        ic.textContent = iconMap[key] || "🧰";
+        btn.insertBefore(ic, btn.firstChild);
+      });
+    }
+    if(document.readyState === "loading"){
+      document.addEventListener("DOMContentLoaded", ensureIcons);
+    }else{
+      ensureIcons();
+    }
+  })();
+</script>
+<!-- [UI:LAYOUT] END -->
+</div>
 </body>
 </html>
