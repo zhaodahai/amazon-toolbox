@@ -1,0 +1,3978 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+
+  <!-- [META:VERSION] 单点版本号：以后只改这里即可（标题/侧栏/JS 会自动同步） -->
+  <!-- [APP:VERSION] -->
+
+  <meta name="app-version" content="1.2.75" />
+
+  <title>运营工具箱 · Aurora</title>
+
+  <style>/* =====================================================================================
+  [UI:STYLE] v1.0.32
+  说明：仅整理与增加锚点注释；不改功能逻辑。
+===================================================================================== */
+
+
+    /*
+      ============================================================
+      运营工具箱（单文件基线）
+      版本：见 <meta name="app-version" ...>
+
+      🔎 快速定位锚点（Ctrl+F 搜索）：
+      - [CSS:BASE] / [CSS:LAYOUT] / [CSS:COMPONENTS]
+      - [CSS:MODULE_COUNT] / [CSS:MODULE_TRANSLATE]
+      - [HTML:SIDEBAR] / [HTML:PANEL_UNIT] / [HTML:PANEL_COUNT]
+      - [HTML:PANEL_TRANSLATE] / [HTML:PANEL_AMAZON]
+      - [JS:CONFIG] / [JS:HELPERS] / [JS:FX] / [JS:UNIT]
+      - [JS:COUNT] / [JS:TRANSLATE] / [JS:AMAZON] / [JS:APP]
+      ============================================================
+    */
+
+    /* =========================
+       [CSS:BASE]
+    ========================= */
+    *{box-sizing:border-box;margin:0;padding:0}
+    html,body{height:100%;font-family:Arial,system-ui,-apple-system,Segoe UI,Roboto,"PingFang SC","Microsoft YaHei",sans-serif;background:#f3f4f6;color:#111827}
+
+    /* =========================
+       [CSS:LAYOUT]
+    ========================= */
+    .app{display:flex;height:100vh}
+    .sidebar{width:220px;min-width:190px;max-width:240px;background:#fff;border-right:1px solid #e5e7eb;padding:14px 12px;display:flex;flex-direction:column;gap:12px}
+    @media (max-width:980px){.sidebar{width:195px;min-width:175px}}
+    .content{flex:1;padding:22px 24px;overflow:auto}
+    @media (max-width:520px){.content{padding:16px 12px}}
+
+    /* =========================
+       [CSS:COMPONENTS]
+    ========================= */
+    .brand{padding:10px;border-radius:12px;border:1px solid #eef2f7;background:linear-gradient(180deg,#f8fafc,#fff)}
+    .brand .t{font-weight:800;font-size:14px}
+    .brand .s{margin-top:4px;color:#6b7280;font-size:12px;line-height:1.45}
+
+    .nav{display:flex;flex-direction:column;gap:10px}
+    .nav button{width:100%;text-align:left;padding:10px;border-radius:10px;border:1px solid #eef2f7;background:#fff;cursor:pointer;box-shadow:0 2px 10px rgba(0,0,0,.05);transition:.15s}
+    .nav button:hover{transform:translateY(-1px);background:#f8fafc;box-shadow:0 6px 18px rgba(0,0,0,.08)}
+    .nav button.active{background:#eef2ff;border-color:rgba(37,99,235,.25);box-shadow:inset 0 0 0 2px rgba(37,99,235,.16),0 6px 18px rgba(0,0,0,.08)}
+
+    .footer{margin-top:auto;padding:10px;border-top:1px solid #eef2f7;color:#6b7280;font-size:12px;display:flex;justify-content:space-between}
+
+    .panel{display:none;background:#fff;border-radius:12px;padding:16px 18px;box-shadow:0 8px 20px rgba(0,0,0,.08)}
+    .panel.active{display:block}
+
+    .head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px}
+    h2{font-size:18px}
+    h3{margin:14px 0 8px;font-size:14px}
+
+    .hint{margin-top:8px;color:#6b7280;font-size:13px;line-height:1.5}
+    .muted{color:#6b7280;font-size:12px;line-height:1.5}
+
+    .row{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+    .row+.row{margin-top:10px}
+
+    label{display:flex;flex-direction:column;gap:6px;font-size:12px;color:#374151}
+    input,select,textarea{border:1px solid #d1d5db;border-radius:10px;padding:8px 10px;height:36px;font:inherit;background:#fff}
+    input:focus,select:focus,textarea:focus{outline:none;border-color:rgba(37,99,235,.55);box-shadow:0 0 0 3px rgba(37,99,235,.14)}
+
+    /* 下拉显示优化：防止“厘米/英寸”等被截断 */
+    select{font-size:13px;line-height:1.2;padding-right:28px;min-width:132px}
+    option{font-size:13px}
+
+    input[type="number"]{width:130px}
+    .sel{min-width:160px}
+    textarea{height:auto;resize:vertical}
+
+    .btn{padding:8px 12px;border:1px solid #e5e7eb;border-radius:8px;background:#fff;cursor:pointer;font-size:13px}
+    .btn:hover{background:#f9fafb}
+    .primary{padding:10px 14px;border:none;border-radius:8px;background:#2563eb;color:#fff;cursor:pointer}
+
+    .swap{cursor:pointer;font-size:18px;color:#2563eb;user-select:none}
+    .result{margin-top:8px;font-weight:800}
+
+
+/* ===== [AMZ:RESULTS_BEAUTIFY] v1.2.31 ===== */
+.amzResGrid{
+  margin-top:12px;
+  display:grid;
+  grid-template-columns:repeat(auto-fit, minmax(160px, 1fr));
+  gap:12px;
+}
+.amzResItem{
+  border:1px solid rgba(255,255,255,.10);
+  background: rgba(255,255,255,.04);
+  border-radius:14px;
+  padding:12px 12px;
+  box-shadow: 0 8px 24px rgba(0,0,0,.18);
+  position:relative;
+  overflow:hidden;
+}
+.amzResItem::before{
+  content:"";
+  position:absolute; inset:-2px;
+  background: radial-gradient(640px 200px at 10% 0%, rgba(122,162,255,.12), transparent 60%),
+              radial-gradient(520px 160px at 95% 0%, rgba(167,139,250,.10), transparent 62%);
+  opacity:.9;
+  pointer-events:none;
+}
+.amzResK{
+  position:relative;
+  color: rgba(226,232,240,.78);
+  font-size:12px;
+  letter-spacing:.2px;
+}
+.amzResV{
+  position:relative;
+  margin-top:6px;
+  font-weight:950;
+  font-size:18px;
+  letter-spacing:.2px;
+}
+.amzResUnit{ margin-left:6px; font-size:12px; font-weight:900; color: rgba(226,232,240,.62); }
+.amzResItemBig .amzResV{ font-size:20px; }
+.amzProfit.pos, .amzMargin.pos{ color: rgba(74,222,128,.92); text-shadow: 0 1px 0 rgba(0,0,0,.35); }
+.amzProfit.neg, .amzMargin.neg{ color: rgba(248,113,113,.95); text-shadow: 0 1px 0 rgba(0,0,0,.35); }
+
+    .cards{display:flex;flex-direction:column;gap:12px}
+    .card{border:1px solid #e5e7eb;background:#fbfdff;border-radius:12px;padding:12px}
+    .cardTitle{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+    .badge{font-size:12px;color:#6b7280;background:#f3f4f6;border-radius:999px;padding:4px 8px}
+
+    .pill{display:inline-block;padding:4px 8px;border-radius:999px;background:#f3f4f6;color:#374151;font-size:12px;margin-right:8px}
+    .pill.over{background:#fee2e2;color:#991b1b;font-weight:800}
+
+    iframe{width:100%;height:420px;border:1px solid #e5e7eb;border-radius:10px}
+
+    /* =========================
+       [CSS:MODULE_COUNT]
+    ========================= */
+    .split{display:flex;flex-direction:column;gap:12px;margin-top:10px}
+    .box{border:1px solid #e5e7eb;background:#fbfdff;border-radius:12px;padding:12px}
+    .boxHead{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px}
+    .boxHead h3{margin:0;font-size:14px}
+
+    .stats{display:flex;flex-wrap:wrap;gap:10px;margin-top:10px}
+    .stat{border:1px solid #eef2f7;background:#fff;border-radius:10px;padding:10px 12px;min-width:150px}
+    .stat .k{color:#6b7280;font-size:12px}
+    .stat .v{font-weight:900;font-size:18px;margin-top:4px}
+
+    /* =========================
+       [CSS:MODULE_TRANSLATE]
+    ========================= */
+    .seg{display:inline-flex;border:1px solid #e5e7eb;border-radius:999px;overflow:hidden;background:#fff}
+    .seg button{border:0;background:transparent;padding:8px 12px;font-size:13px;cursor:pointer;color:#374151}
+    .seg button.active{background:#eef2ff;color:#1d4ed8;font-weight:800}
+    .tPane{display:none;margin-top:12px}
+    .tPane.active{display:block}
+    .two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    @media (max-width:860px){.two{grid-template-columns:1fr}}
+    .mono{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace}
+  
+    /* =========================
+       [CSS:MOBILE] 手机适配（<=720px）
+       - 顶部显示工具栏（菜单/标题/版本）
+       - 侧栏变为抽屉菜单（默认隐藏）
+       - 点击遮罩/切换面板自动收起
+    ========================= */
+    .mbar{display:none}
+    .backdrop{display:none}
+    .iconBtn{
+      border:1px solid #e5e7eb;
+      background:#fff;
+      border-radius:10px;
+      width:40px;height:36px;
+      font-size:18px;
+      cursor:pointer;
+    }
+    @media (max-width:720px){
+      .app{flex-direction:column}
+      /* 顶部栏固定在内容区顶部 */
+      .mbar{
+        display:flex;
+        align-items:center;
+        justify-content:space-between;
+        gap:10px;
+        position:sticky;
+        top:0;
+        z-index:40;
+        padding:10px 10px;
+        margin:-22px -24px 12px -24px; /* 抵消 .content 的 padding */
+        background:rgba(243,244,246,.88);
+        backdrop-filter:saturate(1.2) blur(8px);
+        border-bottom:1px solid #e5e7eb;
+      }
+      .mtitle{font-weight:800;font-size:14px}
+      .mver{font-size:12px;color:#6b7280;white-space:nowrap}
+
+      /* 抽屉侧栏 */
+      .sidebar{
+        position:fixed;
+        left:0; top:0; bottom:0;
+        width:min(78vw, 320px);
+        max-width:320px;
+        transform:translateX(-110%);
+        transition:transform .18s ease;
+        z-index:60;
+        box-shadow:0 12px 40px rgba(0,0,0,.18);
+      }
+      .sidebar.open{transform:translateX(0)}
+      .nav button{padding:12px 12px;font-size:14px}
+
+      /* 遮罩 */
+      .backdrop{
+        display:block;
+        position:fixed;
+        inset:0;
+        background:rgba(0,0,0,.28);
+        z-index:55;
+        opacity:0;
+        pointer-events:none;
+        transition:opacity .18s ease;
+      }
+      .backdrop.show{opacity:1;pointer-events:auto}
+
+      /* 内容区 padding 变小一点 */
+      .content{padding:14px 12px}
+      .mbar{margin:-14px -12px 12px -12px}
+    }
+
+  
+    /* ===== [UI:DESKTOP_MOBILE_MODES] v1.0.32 ===== */
+    @media (min-width: 981px){
+      .nav button{
+        font-size:16px;
+        font-weight:700;
+        letter-spacing:.2px;
+        padding:12px 12px;
+        display:flex;
+        align-items:center;
+        gap:10px;
+      }
+      .nav button .btn-txt{flex:1;}
+.nav button .btn-ic{
+        width:22px;
+        flex:0 0 22px;
+        display:inline-flex;
+        align-items:center;
+        justify-content:center;
+        font-size:18px;
+        line-height:1;
+      }
+      .brand .t{font-size:16px;font-weight:900}
+    }
+    @media (max-width: 980px){
+      .nav button{
+        display:flex;
+        align-items:center;
+        gap:8px;
+      }
+      .nav button .btn-ic{
+        width:20px;
+        flex:0 0 20px;
+        display:inline-flex;
+        align-items:center;
+        justify-content:center;
+        font-size:16px;
+        line-height:1;
+      }
+    }
+
+/* ===== [PANEL:AMZ][RATE_ROW_LAYOUT] v1.0.32 ===== */
+.panel#amazon .rateRow label{
+  flex-direction:row;
+  align-items:center;
+  gap:6px;
+}
+.panel#amazon .rateRow input{
+  width:92px;
+}
+.panel#amazon .rateRow label{
+  white-space:nowrap;
+}
+
+
+
+/* ===== [AMZ:FBA_MODE_BOXES] v1.2.30 ===== */
+.fbaRow{align-items:stretch}
+.fbaModeBox{
+  flex:1;
+  min-width:160px;
+  border:1px solid var(--border);
+  background: var(--card);
+  border-radius:10px;
+  padding:8px;
+  box-shadow: 0 3px 10px rgba(0,0,0,.10);
+  position:relative;
+  overflow:hidden;
+}
+.fbaModeTop{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  font-weight:900;
+  margin-bottom:8px;
+}
+.fbaIc{
+  width:28px;height:28px;
+  display:inline-flex;align-items:center;justify-content:center;
+  border-radius:10px;
+  background: rgba(122,162,255,.16);
+  border: 1px solid rgba(122,162,255,.22);
+}
+.fbaModeName{letter-spacing:.2px}
+.fbaModeHint{
+  margin-top:8px;
+  font-size:12px;
+  color: var(--muted);
+  padding:7px 9px;
+  border-radius:10px;
+  border:1px dashed rgba(255,255,255,.12);
+  background: rgba(255,255,255,.04);
+  line-height:1.45;
+}
+.fbaModeBox.active{
+  border-color: rgba(122,162,255,.55);
+  box-shadow: 0 0 0 3px rgba(122,162,255,.16), 0 12px 34px rgba(0,0,0,.30);
+}
+.fbaModeBox.active::before{
+  content:"";
+  position:absolute; inset:-2px;
+  background: radial-gradient(800px 220px at 15% 0%, rgba(122,162,255,.22), transparent 60%),
+              radial-gradient(700px 220px at 90% 10%, rgba(167,139,250,.18), transparent 62%);
+  pointer-events:none;
+}
+.fbaModeBox.active .fbaModeHint{
+  color: var(--text);
+  border-color: rgba(122,162,255,.38);
+  background: rgba(122,162,255,.12);
+}
+
+@media (max-width:860px){
+  .fbaModeBox{min-width: 100%;}
+}
+/* ===== [LAYOUT:TOPBAR + SIDEBAR + WORKSPACE] v1.0.51 (base 1.0.32) ===== */
+.page{display:flex;flex-direction:column;height:100vh;min-height:100vh}
+.topbar{
+  display:flex;align-items:center;justify-content:space-between;
+  gap:12px;padding:12px 14px;
+  border-bottom:1px solid rgba(17,24,39,.10);
+  background:#ffffff;
+}
+.topBrand{display:flex;flex-direction:column;gap:2px;min-width:0}
+.topTitle{font-weight:900;letter-spacing:.2px}
+.topSub{font-size:12px;color:#6b7280;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:78vw}
+.topMeta{display:flex;align-items:center;gap:10px;color:#6b7280;font-weight:800}
+.topVer{padding:6px 10px;border-radius:999px;border:1px solid #eef2f7;background:#f8fafc}
+.topVerNum{font-variant-numeric:tabular-nums}
+
+/* 关键：下方仍保持“侧边栏 + 工作区”并排 */
+.app{flex:1;height:auto;min-height:0}
+.sidebar{height:auto}
+.content{min-height:0}
+
+/* 视觉上把“运营工具箱模块”搬到顶部：隐藏左侧 brand */
+.sidebar .brand{display:none !important;}
+/* 移动端：副标题隐藏 */
+@media (max-width:720px){
+  .topSub{display:none}
+}
+
+/* ===== [TOPBAR:NO_VERSION][FONT_SCALE_UP] v1.0.52 ===== */
+/* 1) 顶部导航栏不显示版本号（版本只保留在侧边栏） */
+.topbar .topMeta{display:none !important;}
+
+/* 2) 字体整体放大一些（保持布局不乱） */
+html{font-size:16px;} /* 原来更小，这里整体提升 */
+.sidebar{font-size:15px;}
+.nav button{font-size:15px; font-weight:800;}
+.content{font-size:15px;}
+.head h2{font-size:20px;}
+.cardTitle h3{font-size:16px;}
+input, textarea, select{font-size:15px;}
+.result{font-size:15px; line-height:1.6;}
+
+/* ===== [COUNT:RISK_HINT] v1.2.3 ===== */
+#riskHint{
+  background: #3b82f6;
+  border: 1px solid #3b82f6;
+  color: rgba(243,244,246,.92);
+}
+
+/* ===== [COUNT:RISK_HINT_READABLE] v1.2.4 ===== */
+#riskHint{
+  display:block;
+  font-weight: 850;
+  line-height: 1.6;
+  letter-spacing: .1px;
+  background: #3b82f6;
+  border: 1px solid #3b82f6;
+  color: var(--text) !important;
+  text-shadow: 0 1px 0 rgba(0,0,0,.25);
+}
+
+/* ===== [COUNT:RISK_HIGHLIGHT_IN_TEXTAREA] v1.2.6 ===== */
+.hlWrap{position:relative;}
+.hlLayer{
+  position:absolute; inset:0;
+  margin:0; pointer-events:none;
+  white-space:pre-wrap; word-wrap:break-word;
+  overflow:hidden;
+  padding:12px 12px;
+  border-radius:12px;
+  font: inherit;
+  line-height: 1.6;
+  color: var(--text); /* base text color in layer */
+}
+.hlLayer mark.risk{
+  background: #3b82f6;
+  color: var(--text);
+  padding: 0 2px;
+  border-radius: 4px;
+}
+#textInputWrap textarea#textInput{
+  position:relative;
+  background: transparent !important;
+  color: transparent !important; /* hide real text, show layer text */
+  -webkit-text-fill-color: transparent !important;
+  caret-color: var(--text);
+}
+#textInputWrap textarea#textInput::placeholder{
+  color: rgba(209,213,219,.80);
+  -webkit-text-fill-color: rgba(209,213,219,.80);
+}
+/* selection style (best-effort) */
+#textInputWrap textarea#textInput::selection{background: rgba(122,162,255,.35);}
+
+/* ===== [COUNT:CARET_FIX] v1.2.7 ===== */
+/* 不再把真实文本完全透明，否则某些浏览器会隐藏光标 */
+#textInputWrap textarea#textInput{
+  color: rgba(0,0,0,0.02) !important; /* 几乎不可见，但可保持光标 */
+  -webkit-text-fill-color: rgba(0,0,0,0.02) !important;
+  caret-color: var(--text) !important; /* 明确指定光标颜色 */
+}
+/* 确保聚焦时光标可见 */
+#textInputWrap textarea#textInput:focus{
+  caret-color: var(--text) !important;
+}
+
+/* ===== [COUNT:RISK_PREVIEW_MODE] v1.2.18 ===== */
+/* 彻底取消叠层高亮（黄底/错位/光标问题的根源），只保留“预览区黄色加粗” */
+#riskColorPreview{border: 1px dashed rgba(255,255,255,.14);}
+#riskColorPreview .riskColor{ color:#3b82f6; font-weight:850; }
+textarea#textInput{
+  color: var(--text) !important;
+  -webkit-text-fill-color: var(--text) !important;
+  caret-color: var(--text) !important;
+}
+
+/* ===== [COUNT:CONTENTEDITABLE_RISK_INLINE] v1.2.19 ===== */
+.ceInput{
+  width: 100%;
+  min-height: 140px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,.10);
+  background: rgba(255,255,255,.04);
+  color: var(--text);
+  outline: none;
+  white-space: pre-wrap;
+  word-break: break-word;
+  line-height: 1.6;
+  font: inherit;
+}
+.ceInput:focus{
+  border-color: rgba(122,162,255,.45);
+  box-shadow: 0 0 0 3px rgba(122,162,255,.18);
+}
+.ceInput .riskWord{
+  color: #3b82f6;
+  font-weight: 850;
+}
+.ceInput:empty:before{
+  content: attr(data-placeholder);
+  color: rgba(209,213,219,.60);
+  pointer-events: none;
+}
+
+/* ===== [COUNT:CE_BORDER_FIX] v1.2.20 ===== */
+.ceInput{
+  border: 1px solid rgba(148,163,184,.35) !important; /* slate-400 */
+  background: rgba(255,255,255,.04);
+}
+.ceInput:hover{
+  border-color: rgba(148,163,184,.55);
+}
+.ceInput:focus{
+  border-color: #7aa2ff !important;
+  box-shadow: 0 0 0 3px rgba(122,162,255,.22) !important;
+}
+
+/* ===== [COUNT:CE_BG_UNIFY] v1.2.21 ===== */
+/* 与其他输入/卡片保持一致的背景色 */
+.ceInput{
+  background: var(--card-bg, rgba(255,255,255,.06)) !important;
+}
+
+/* ===== [COUNT:CE_BG_MATCH_INPUT] v1.2.22 ===== */
+/* 与页面中 textarea/input 的背景保持一致（当前主题为浅色：background:#fff） */
+.ceInput{
+  background: #fff !important;
+  border: 1px solid #d1d5db !important;
+}
+.ceInput:hover{ border-color:#cbd5e1 !important; }
+.ceInput:focus{
+  border-color:#7aa2ff !important;
+  box-shadow: 0 0 0 3px rgba(122,162,255,.18) !important;
+}
+
+/* =====================================================================================
+   [THEME:DARK_A] 夜视深色主题（方案A：专业夜视） v1.2.26
+   - A1：手动切换（日/夜）
+   - B1：风险词柔和琥珀黄
+===================================================================================== */
+:root{
+  --bg:#f3f4f6;
+  --panel:#ffffff;
+  --card:#fbfdff;
+  --text:#111827;
+  --muted:#6b7280;
+  --border:#e5e7eb;
+  --border-2:#eef2f7;
+  --accent:#2563eb;
+  --accent-2:#1d4ed8;
+  --risk:#3b82f6;
+  --shadow:0 8px 20px rgba(0,0,0,.08);
+}
+
+/* 主题切换按钮 */
+.themeBtn{
+  display:inline-flex; align-items:center; gap:8px;
+  padding:8px 10px;
+  border-radius:999px;
+  border:1px solid var(--border);
+  background:var(--panel);
+  cursor:pointer;
+  font-weight:850;
+  color:var(--text);
+  box-shadow:0 2px 10px rgba(0,0,0,.05);
+  user-select:none;
+}
+.themeBtn:hover{ transform:translateY(-1px); }
+.themeBtn .ic{ width:18px; display:inline-flex; justify-content:center; }
+.themeBtn .moon{ display:none; }
+.themeBtn .txt{ font-size:13px; opacity:.9; }
+
+/* 移动端：主题按钮更紧凑 */
+.iconBtn.themeIcon{ width:40px; }
+
+/* 深色主题变量 */
+body.dark{
+  --bg:linear-gradient(180deg, #070b18 0%, #0b1220 55%, #070b18 100%);
+  --panel:rgba(15, 23, 42, .62);
+  --card:rgba(17, 28, 52, .58);
+  --text:#e5e7eb;
+  --muted:#9aa4b2;
+  --border:rgba(255,255,255,.10);
+  --accent:#7aa2ff;
+  --accent2:#a78bfa;
+  --risk:#fbbf24;
+  --shadow:0 16px 46px rgba(0,0,0,.55);
+}
+
+/* ===== [AURORA:TEXT_TONE_FIX] v1.2.32 ===== */
+body.dark .hint,
+body.dark .muted{
+  color: rgba(226,232,240,.72) !important;
+}
+body.dark .hint strong,
+body.dark .muted strong{
+  color: rgba(226,232,240,.90);
+}
+
+
+
+
+/* ===== [BEAUTY:ENHANCED_UI] v1 ===== */
+body.dark{
+  /* subtle noise / vignette layer */
+}
+body.dark::before{
+  content:"";
+  position:fixed; inset:0;
+  pointer-events:none;
+  background:
+    radial-gradient(1200px 600px at 15% 10%, rgba(255,255,255,.10), transparent 55%),
+    radial-gradient(900px 500px at 85% 20%, rgba(255,255,255,.06), transparent 60%),
+    radial-gradient(900px 700px at 60% 90%, rgba(255,255,255,.05), transparent 65%),
+    linear-gradient(180deg, rgba(0,0,0,.18), rgba(0,0,0,.38));
+  opacity:.85;
+  mix-blend-mode:screen;
+  filter:saturate(1.05);
+  z-index:-1;
+}
+/* glassy panels */
+body.dark .panel{
+  background: var(--panel);
+  border: 1px solid rgba(255,255,255,.10);
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(10px) saturate(1.1);
+}
+body.dark .card,
+body.dark .box,
+body.dark .stat{
+  background: var(--card);
+  border: 1px solid rgba(255,255,255,.10);
+  box-shadow: 0 10px 24px rgba(0,0,0,.35);
+}
+body.dark .brand,
+body.dark .topbar{
+  background: rgba(15,23,42,.68);
+  border-bottom: 1px solid rgba(255,255,255,.10);
+  backdrop-filter: blur(10px) saturate(1.1);
+}
+body.dark .sidebar{
+  border-right: 1px solid rgba(255,255,255,.10);
+}
+/* richer nav buttons */
+body.dark .nav button{
+  border: 1px solid rgba(255,255,255,.10);
+  background: rgba(255,255,255,.04);
+}
+body.dark .nav button:hover{
+  background: rgba(255,255,255,.06);
+  transform: translateY(-1px);
+}
+body.dark .nav button.active{
+  border-color: rgba(255,255,255,.14);
+  box-shadow: 0 10px 24px rgba(0,0,0,.35), inset 0 0 0 2px rgba(255,255,255,.06);
+}
+/* inputs */
+body.dark input, body.dark select, body.dark textarea{
+  background: rgba(255,255,255,.04);
+  border: 1px solid rgba(255,255,255,.12);
+  color: var(--text);
+}
+body.dark input:focus, body.dark select:focus, body.dark textarea:focus{
+  border-color: rgba(122,162,255,.65);
+  box-shadow: 0 0 0 3px rgba(122,162,255,.18);
+}
+/* badges / pills */
+body.dark .badge{
+  background: rgba(255,255,255,.06);
+  border: 1px solid rgba(255,255,255,.10);
+  color: var(--muted);
+}
+body.dark .pill{
+  background: rgba(255,255,255,.06);
+  border: 1px solid rgba(255,255,255,.10);
+  color: var(--text);
+}
+body.dark .pill.over{
+  background: rgba(239,68,68,.18);
+  border-color: rgba(239,68,68,.35);
+  color: #fecaca;
+}
+/* risk highlight (B1: amber) */
+body.dark .ceInput .riskWord{ color: var(--risk); text-shadow: 0 1px 0 rgba(0,0,0,.35); }
+body.dark #riskHint{
+  background: #3b82f6;
+  border: 1px solid #3b82f6;
+  color: var(--text);
+}
+/* nice separators */
+body.dark .footer{
+  border-top: 1px solid rgba(255,255,255,.10);
+}
+
+body.dark .primary{
+  background: linear-gradient(135deg, #7aa2ff 0%, #a78bfa 100%);
+  box-shadow: 0 10px 24px rgba(0,0,0,.35);
+}
+body.dark .nav button.active{
+  background: linear-gradient(135deg, rgba(255,255,255,.07) 0%, rgba(255,255,255,.03) 70%), 
+              linear-gradient(135deg, rgba(0,0,0,.0) 0%, rgba(0,0,0,.0) 100%);
+}
+body.dark .nav button.active .btn-ic{ color:#7aa2ff; filter: drop-shadow(0 6px 10px rgba(0,0,0,.35)); }
+body.dark .swap{ color:#7aa2ff; }
+body.dark input:focus, body.dark select:focus, body.dark textarea:focus{
+  border-color: color-mix(in srgb, #7aa2ff 65%, white 0%);
+  box-shadow: 0 0 0 3px color-mix(in srgb, #7aa2ff 22%, transparent);
+}
+/* subtle gradient line under topbar */
+body.dark .topbar{ position:sticky; top:0; z-index:80; }
+body.dark .topbar::after{
+  content:"";
+  position:absolute; left:0; right:0; bottom:-1px; height:2px;
+  background: linear-gradient(90deg, transparent 0%, #7aa2ff 35%, #a78bfa 65%, transparent 100%);
+  opacity:.55;
+}
+
+
+
+/* 深色模式：基础背景与文字 */
+body{ background:var(--bg); color:var(--text); }
+.page{ background:var(--bg); color:var(--text); }
+
+/* 顶栏/侧栏/面板 */
+.topbar{
+  background:var(--panel);
+  border-bottom:1px solid var(--border);
+}
+.sidebar{
+  background:var(--panel);
+  border-right:1px solid var(--border);
+}
+.panel{
+  background:var(--panel);
+  box-shadow:var(--shadow);
+}
+.card{
+  background:var(--card);
+  border:1px solid var(--border);
+}
+body.dark .box{ background:var(--card); border:1px solid var(--border); }
+.stat{
+  background:var(--panel);
+  border:1px solid var(--border-2);
+}
+.badge,.pill{ background:rgba(148,163,184,.12); color:var(--muted); }
+body.dark .badge, body.dark .pill{ background:rgba(148,163,184,.14); color:var(--muted); }
+.pill.over{
+  background:rgba(239,68,68,.18);
+  color:#fecaca;
+  font-weight:900;
+}
+
+/* 文本色分级 */
+.hint,.muted,.footer{ color:var(--muted); }
+.brand .s{ color:var(--muted); }
+.stat .k{ color:var(--muted); }
+
+/* 导航按钮 */
+.nav button{
+  background:var(--panel);
+  border:1px solid var(--border-2);
+  color:var(--text);
+}
+.nav button:hover{ background:rgba(148,163,184,.10); }
+.nav button.active{
+  background:rgba(122,162,255,.18);
+  border-color:rgba(122,162,255,.35);
+}
+
+/* 输入控件 */
+input,select,textarea{
+  background:var(--panel);
+  color:var(--text);
+  border:1px solid rgba(148,163,184,.28);
+}
+input::placeholder, textarea::placeholder{ color:rgba(154,164,178,.75); }
+input:focus,select:focus,textarea:focus{
+  border-color:rgba(122,162,255,.55);
+  box-shadow:0 0 0 3px rgba(122,162,255,.18);
+}
+
+/* contenteditable 输入框（你稳定方案的核心） */
+body.dark .ceInput{
+  background:var(--panel) !important;
+  color:var(--text) !important;
+  border:1px solid rgba(148,163,184,.30) !important;
+}
+body.dark .ceInput:hover{ border-color:rgba(148,163,184,.46) !important; }
+body.dark .ceInput:focus{
+  border-color:var(--accent) !important;
+  box-shadow:0 0 0 3px rgba(122,162,255,.20) !important;
+}
+body.dark .ceInput:empty:before{ color:rgba(154,164,178,.70); }
+
+/* 风险词：B1 柔和琥珀黄（夜视友好） */
+.ceInput .riskWord{
+  color:var(--risk);
+  font-weight:900;
+}
+
+/* 风险提示条 */
+#riskHint{
+  background: rgba(251,191,36,.12) !important;
+  border: 1px solid rgba(251,191,36,.25) !important;
+  color: var(--text) !important;
+}
+
+/* 切换按钮：暗色时显示月亮图标 */
+body.dark .themeBtn .sun{ display:none; }
+body.dark .themeBtn .moon{ display:inline-flex; }
+body.dark .themeBtn{ border-color:var(--border); }
+
+/* iframe 边框跟随主题 */
+iframe{ border:1px solid var(--border); background:var(--panel); }
+
+
+/* ===== [HOTFIX:INTERACTION] v1.2.28 ===== */
+body.dark .panel, body.dark .content, body.dark .nav button, body.dark .seg button{ pointer-events:auto; }
+
+/* ===== [AMZ:UNIFY_STYLE] v1.2.32 ===== */
+.panel#amazon h3{
+  font-size:14px;
+  font-weight:900;
+  color: rgba(226,232,240,.92);
+  margin-top:16px;
+  margin-bottom:10px;
+}
+body.dark .panel#amazon label{
+  background: rgba(255,255,255,.03);
+  border: 1px solid rgba(255,255,255,.10);
+  border-radius: 12px;
+  padding: 10px 10px;
+}
+body.dark .panel#amazon label > input,
+body.dark .panel#amazon label > select{
+  background: rgba(0,0,0,.18) !important;
+  border: 1px solid rgba(255,255,255,.12) !important;
+}
+body.dark .panel#amazon .rateRow label{
+  background: rgba(255,255,255,.02);
+}
+body.dark .panel#amazon .amzResItem{
+  border:1px solid rgba(255,255,255,.12);
+  background: rgba(255,255,255,.035);
+}
+
+
+
+/* =====================================================================================
+   [LIGHT:AMZ_POLISH] v1.2.34
+   说明：仅优化白天模式（背景色/文字色）；不改布局/交互/JS；夜间模式(Aurora)不受影响。
+   目标：恢复 v1.2.22 那种干净、协调、工具型观感（重点：亚马逊核算模块）。
+===================================================================================== */
+
+/* 白天模式判定：body 没有 .dark */
+body:not(.dark){
+  background:#f3f4f6;
+  color:#111827;
+}
+body:not(.dark) .topbar{
+  background:#ffffff;
+  border-bottom:1px solid rgba(17,24,39,.10);
+}
+body:not(.dark) .sidebar{
+  background:#ffffff;
+  border-right:1px solid #e5e7eb;
+}
+
+/* —— Amazon 核算：输入区（让“卡片感”更统一） —— */
+body:not(.dark) .panel#amazon .hint{ color:#6b7280 !important; }
+body:not(.dark) .panel#amazon h3{
+  color:#111827 !important;
+}
+body:not(.dark) .panel#amazon label{
+  background:#ffffff !important;
+  border:1px solid #e5e7eb !important;
+  border-radius:12px;
+  padding:10px 10px;
+}
+body:not(.dark) .panel#amazon label > input,
+body:not(.dark) .panel#amazon label > select{
+  background:#ffffff !important;
+  border:1px solid #d1d5db !important;
+  color:#111827 !important;
+}
+body:not(.dark) .panel#amazon .rateRow label{
+  background:#f9fafb !important;
+  border-color:#e5e7eb !important;
+}
+
+/* —— FBA 三块模式：白天去掉“夜视玻璃感”，改为清爽工具风 —— */
+body:not(.dark) .fbaModeBox{
+  background:#ffffff !important;
+  border:1px solid #e5e7eb !important;
+  box-shadow:0 6px 16px rgba(17,24,39,.08) !important;
+}
+body:not(.dark) .fbaModeHint{
+  color:#6b7280 !important;
+  border:1px dashed #e5e7eb !important;
+  background:#f9fafb !important;
+}
+body:not(.dark) .fbaModeBox.active{
+  border-color:rgba(37,99,235,.35) !important;
+  box-shadow:0 0 0 3px rgba(37,99,235,.12), 0 10px 22px rgba(17,24,39,.10) !important;
+}
+body:not(.dark) .fbaModeBox.active::before{
+  content:none !important;
+}
+body:not(.dark) .fbaIc{
+  background:rgba(37,99,235,.10) !important;
+  border:1px solid rgba(37,99,235,.18) !important;
+}
+
+/* —— 结果区：从“夜视卡片”改回白天清爽结果卡 —— */
+body:not(.dark) .amzResItem{
+  border:1px solid #e5e7eb !important;
+  background:#ffffff !important;
+  box-shadow:0 10px 22px rgba(17,24,39,.08) !important;
+}
+body:not(.dark) .amzResItem::before{ content:none !important; }
+body:not(.dark) .amzResK{ color:#6b7280 !important; }
+body:not(.dark) .amzResV{ color:#111827 !important; }
+body:not(.dark) .amzResUnit{ color:#9ca3af !important; }
+body:not(.dark) .amzProfit.pos,
+body:not(.dark) .amzMargin.pos,
+body:not(.dark) .amzProfit.neg,
+body:not(.dark) .amzMargin.neg{
+  text-shadow:none !important;
+}
+
+
+/* =========================
+   v1.2.75 — Aurora night text brightness boost
+   Scope: text color ONLY (no layout / no JS)
+========================= */
+body.dark,
+body[data-theme="dark"]{
+  --aurora-text-1: #e5e7eb;  /* primary */
+  --aurora-text-2: #cbd5e1;  /* secondary */
+  --aurora-text-3: #94a3b8;  /* muted */
+}
+
+body.dark :where(p,span,div,li,label,input,textarea,select),
+body[data-theme="dark"] :where(p,span,div,li,label,input,textarea,select){
+  color: var(--aurora-text-1);
+}
+
+body.dark :where(small,.hint,.desc,.note,.sub),
+body[data-theme="dark"] :where(small,.hint,.desc,.note,.sub){
+  color: var(--aurora-text-2);
+}
+
+body.dark ::placeholder,
+body[data-theme="dark"] ::placeholder{
+  color: var(--aurora-text-3);
+}
+
+
+/* =========================
+   v1.2.75 — 选品前判断：可承受广告 & 结论（轻量版）
+   仅新增展示与计算，不增加输入项，不改交互结构
+========================= */
+.amzVerdict{ font-weight:700; letter-spacing:.5px; }
+.amzVerdict.good{ color:#10b981; }  /* green */
+.amzVerdict.warn{ color:#3b82f6; }  /* amber */
+.amzVerdict.bad{  color:#ef4444; }  /* red */
+.amzMaxAd{ font-weight:600; }
+
+
+/* =========================
+   v1.2.75 — 核算输入提醒（默认值提示 + 必填缺失红点）
+   仅提示，不改布局、不改交互、不改核心计算逻辑
+========================= */
+.field-badge{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  margin-left:6px;
+  padding:2px 8px;
+  border-radius:999px;
+  font-size:12px;
+  line-height:1;
+  border:1px solid transparent;
+  vertical-align:middle;
+  user-select:none;
+}
+.field-badge.default{
+  background:#3b82f6;
+  border-color:#3b82f6;
+}
+.field-badge.required{
+  background:rgba(239,68,68,.12);
+  border-color:rgba(239,68,68,.28);
+}
+/* red dot on label when required missing */
+label.req-missing-label{
+  position:relative;
+}
+label.req-missing-label::after{
+  content:'';
+  position:absolute;
+  top:6px;
+  right:8px;
+  width:8px;
+  height:8px;
+  border-radius:50%;
+  background:rgba(239,68,68,.95);
+  box-shadow:0 0 0 2px rgba(239,68,68,.15);
+}
+/* input border highlight for missing required */
+input.req-missing, select.req-missing, textarea.req-missing{
+  border-color:rgba(239,68,68,.85) !important;
+  box-shadow:0 0 0 3px rgba(239,68,68,.12) !important;
+}
+/* subtle highlight when still default (not error) */
+input.is-default{
+  border-color:#3b82f6 !important;
+}
+
+
+/* =========================
+   v1.2.75 — 输入状态点（红/黄/绿）
+   规则：红=必填未填；黄=默认值；绿=非默认已填；可不填=不显示
+========================= */
+.field-badge{ display:none !important; } /* hide v1.2.37 badges */
+label.req-missing-label::after{ display:none !important; } /* disable old red-dot */
+
+.stateLegend{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:8px 10px;
+  margin:8px 0 14px;
+  border-radius:12px;
+  border:1px solid rgba(148,163,184,.25);
+  background:rgba(148,163,184,.06);
+  font-size:12px;
+}
+.stateLegend .lg{ color:inherit; opacity:.85; margin-right:2px; }
+.stateLegend .dot{
+  width:10px;height:10px;border-radius:50%;
+  display:inline-block;
+  box-shadow:0 0 0 2px rgba(255,255,255,.04);
+}
+.stateLegend .dot.red{ background:rgba(239,68,68,.95); }
+.stateLegend .dot.yellow{ background:#3b82f6; }
+.stateLegend .dot.green{ background:rgba(16,185,129,.95); }
+
+label.st-dot{ position:relative; }
+label.st-dot::after{
+  content:'';
+  position:absolute;
+  top:6px;
+  right:8px;
+  width:9px;
+  height:9px;
+  border-radius:50%;
+  background:transparent;
+  box-shadow:0 0 0 2px rgba(0,0,0,.08);
+}
+label.st-red::after{ background:rgba(239,68,68,.95); }
+label.st-yellow::after{ background:#3b82f6; }
+label.st-green::after{ background:rgba(16,185,129,.95); }
+
+/* optional: subtle input outline when missing required */
+input.req-missing, select.req-missing, textarea.req-missing{
+  border-color:rgba(239,68,68,.85) !important;
+  box-shadow:0 0 0 3px rgba(239,68,68,.12) !important;
+}
+
+
+/* v1.2.75 — header right legend placement */
+.headAmazon{ display:flex; align-items:center; justify-content:space-between; gap:10px; }
+.headAmazon .headRight{ display:flex; align-items:center; gap:10px; }
+.stateLegendTop{
+  margin:0;
+  padding:6px 10px;
+  border-radius:999px;
+  white-space:nowrap;
+}
+.stateLegendTop .lg{ margin-right:6px; }
+@media (max-width: 720px){
+  .stateLegendTop{ display:none; } /* mobile: keep clean */
+}
+
+/* v1.2.75 — reliable label dot (real element, not ::after) */
+label.st-dot{ position:relative; }
+label .stDotSpan{
+  position:absolute;
+  top:6px;
+  right:8px;
+  width:9px;
+  height:9px;
+  border-radius:50%;
+  display:inline-block;
+  box-shadow:0 0 0 2px rgba(0,0,0,.08);
+}
+label .stDotSpan.red{ background:rgba(239,68,68,.95); }
+label .stDotSpan.yellow{ background:#3b82f6; }
+label .stDotSpan.green{ background:rgba(16,185,129,.95); }
+
+/* disable old pseudo dot styles */
+/* =========================
+   v1.2.75 — State dots visibility & spacing fix
+========================= */
+label{ position:relative; }
+label .stDotSpan{
+  position:absolute;
+  top:4px;
+  right:-6px;           /* pull slightly outside label text */
+  width:8px;
+  height:8px;
+  border-radius:50%;
+  display:inline-block;
+  z-index:5;
+}
+label .stDotSpan.red{ background:#ef4444; }
+label .stDotSpan.yellow{ background:#3b82f6; }
+label .stDotSpan.green{ background:#10b981; }
+
+/* header spacing */
+.headAmazon .headRight{
+  gap:16px;             /* separate legend and button */
+}
+.stateLegendTop{
+  padding:6px 12px;
+}
+
+
+/* =========================
+   v1.2.75 — 状态点修复（恢复可见）+ 顶部位置微调 + 清空按钮美化
+========================= */
+
+/* (A) Working dots via ::after (matches current JS class logic) */
+label{ position:relative; }
+label.st-dot::after{
+  content:'';
+  position:absolute;
+  top:4px;
+  right:6px;           /* inside label, avoid being clipped */
+  width:9px;
+  height:9px;
+  border-radius:50%;
+  display:inline-block;
+  z-index:6;
+  box-shadow:0 0 0 2px rgba(0,0,0,.10);
+}
+label.st-red::after{ background:#ef4444; }
+label.st-yellow::after{ background:#3b82f6; }
+label.st-green::after{ background:#10b981; }
+
+/* ensure we do NOT hide the dot */
+label.st-dot::after{ visibility:visible !important; opacity:1 !important; }
+
+/* (B) Legend move slightly toward center & improve spacing */
+.headAmazon{ position:relative; }
+.headAmazon .headRight{ gap:18px; padding-right:10px; }
+.stateLegendTop{
+  margin-right:18px;           /* pull away from the far-right */
+}
+
+/* (C) Clear button polish */
+#clearAmazon.btn{
+  border-radius:12px;
+  padding:8px 12px;
+  border:1px solid rgba(148,163,184,.35);
+  background:rgba(148,163,184,.08);
+  transition:transform .08s ease, background .15s ease, border-color .15s ease;
+}
+#clearAmazon.btn:hover{
+  background:rgba(148,163,184,.14);
+  border-color:rgba(148,163,184,.55);
+}
+#clearAmazon.btn:active{
+  transform:scale(.98);
+}
+
+
+/* =========================
+   v1.2.75 — 必填红点修复 + FBA卡片外层红点（右上角）
+========================= */
+
+/* 强制 label 红/黄/绿点可见（覆盖任何后续样式） */
+label.st-dot{ position:relative !important; }
+label.st-dot::after{
+  content:'' !important;
+  position:absolute !important;
+  top:4px !important;
+  right:6px !important;
+  width:9px !important;
+  height:9px !important;
+  border-radius:50% !important;
+  display:inline-block !important;
+  z-index:999 !important;
+  opacity:1 !important;
+  visibility:visible !important;
+  box-shadow:0 0 0 2px rgba(0,0,0,.12) !important;
+}
+label.st-red::after{ background:#ef4444 !important; }
+label.st-yellow::after{ background:#3b82f6 !important; }
+label.st-green::after{ background:#10b981 !important; }
+
+/* FBA 外层卡片点（放在矩形背景右上角） */
+.fbaModeBox{ position:relative; }
+.fbaModeBox.st-dot::after{
+  content:'';
+  position:absolute;
+  top:8px;
+  right:10px;
+  width:10px;
+  height:10px;
+  border-radius:50%;
+  z-index:999;
+  box-shadow:0 0 0 2px rgba(0,0,0,.12);
+}
+.fbaModeBox.st-red::after{ background:#ef4444; }
+.fbaModeBox.st-yellow::after{ background:#3b82f6; }
+.fbaModeBox.st-green::after{ background:#10b981; }
+
+
+/* =========================
+   v1.2.75 — 清空按钮夜间可见性优化 + FBA仅保留外圈点
+========================= */
+
+/* FBA：仅保留卡片右上角点，隐藏卡片内部 label 点 */
+#fbaRow #fbaRow label.st-red::after,
+#fbaRow label.st-yellow::after,
+#fbaRow label.st-green::after{ display:none !important; }
+
+/* Clear button: clean, tool-like, visible in both themes */
+#clearAmazon.btn{
+  border-radius:12px;
+  padding:8px 12px;
+  font-weight:600;
+  border:1px solid rgba(148,163,184,.35);
+  background:rgba(148,163,184,.10);
+  color:inherit;
+  transition:transform .08s ease, background .15s ease, border-color .15s ease, box-shadow .15s ease;
+}
+#clearAmazon.btn:hover{
+  background:rgba(148,163,184,.16);
+  border-color:rgba(148,163,184,.55);
+}
+#clearAmazon.btn:active{ transform:scale(.98); }
+
+/* Night mode explicit boost (Aurora) */
+body.dark #clearAmazon.btn,
+body[data-theme="dark"] #clearAmazon.btn{
+  border-color:rgba(226,232,240,.35);
+  background:rgba(226,232,240,.10);
+  color:rgba(240,244,255,.92);
+  box-shadow:0 6px 18px rgba(0,0,0,.28);
+}
+body.dark #clearAmazon.btn:hover,
+body[data-theme="dark"] #clearAmazon.btn:hover{
+  background:rgba(226,232,240,.16);
+  border-color:rgba(226,232,240,.55);
+}
+
+
+/* =========================
+   v1.2.75 — 点位置修正（不落在输入框上）+ 0/负数红点规则
+========================= */
+
+/* label dot: place slightly OUTSIDE the label block (top-right), so it won't look like an input dot */
+label.st-dot{ position:relative !important; }
+label.st-dot::after{
+  right:-8px !important;
+  top:2px !important;
+}
+
+/* ensure label doesn't clip the dot */
+label{ overflow:visible !important; }
+
+
+/* =========================
+   v1.2.75 — 非FBA输入框状态点位置修正（回到矩形内）
+   目标：点在label右上角内侧，不跑到卡片外，不压到输入框
+========================= */
+#amazon label.st-dot{ padding-right:14px; } /* reserve room for dot */
+#amazon label.st-dot::after{
+  right:6px !important;   /* inside label */
+  top:6px !important;
+}
+/* keep it visually away from input box by placing near the label text line */
+#amazon label.st-dot{ align-items:flex-start; }
+
+
+/* =========================
+   v1.2.75 — VAT分区 + FBA卡片计算展示（仅显示，不改交互）
+========================= */
+.fbaCalcLine{
+  margin-top:6px;
+  font-size:12px;
+  opacity:.9;
+}
+#vatRegion{
+  width:100%;
+}
+
+
+/* =========================
+   v1.2.75 — FBA卡片右侧金额展示（更清晰）
+========================= */
+.fbaModeTop{
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+.fbaAmtShow{
+  margin-left:auto;
+  font-size:16px;
+  font-weight:800;
+  letter-spacing:.2px;
+  opacity:.95;
+}
+
+
+/* =========================
+   v1.2.75 — FBA 结果放到输入框右侧（更清晰）
+========================= */
+.fbaLine, .fbaAutoWrap{
+  display:flex;
+  align-items:flex-start;
+  gap:10px;
+}
+.fbaLineLabel{
+  flex: 0 0 62%;
+}
+.fbaLineLabel input{
+  width:100%;
+}
+.fbaLineResult{
+  flex: 1 1 auto;
+  text-align:right;
+  font-size:18px;
+  font-weight:900;
+  line-height: 1.2;
+  padding-top: 18px; /* align with input baseline visually */
+  opacity:.95;
+}
+.fbaAutoWrap .fbaInputs{
+  flex: 0 0 62%;
+}
+.fbaAutoWrap .fbaLineResult{
+  padding-top: 6px;
+}
+
+
+/* =========================
+   v1.2.75 — 状态点恢复（红/黄/绿）+ FBA三卡右侧金额展示
+========================= */
+#amazon label.st-dot{ position:relative; padding-right:14px; overflow:visible; }
+#amazon label.st-dot::after{
+  content:'';
+  position:absolute;
+  top:6px;
+  right:6px;
+  width:9px;
+  height:9px;
+  border-radius:50%;
+  display:inline-block;
+  z-index:9;
+  box-shadow:0 0 0 2px rgba(0,0,0,.10);
+}
+#amazon label.st-red::after{ background:#ef4444; }
+#amazon label.st-yellow::after{ background:#3b82f6; }
+#amazon label.st-green::after{ background:#10b981; }
+
+/* FBA outer card dot (keep) */
+#amazon .fbaModeBox{ position:relative; }
+#amazon .fbaModeBox.st-dot::after{
+  content:'';
+  position:absolute;
+  top:8px;
+  right:10px;
+  width:10px;
+  height:10px;
+  border-radius:50%;
+  z-index:10;
+  box-shadow:0 0 0 2px rgba(0,0,0,.10);
+}
+#amazon .fbaModeBox.st-red::after{ background:#ef4444; }
+#amazon .fbaModeBox.st-yellow::after{ background:#3b82f6; }
+#amazon .fbaModeBox.st-green::after{ background:#10b981; }
+
+/* FBA input-left / result-right layout */
+#amazon .fbaLine, #amazon .fbaAutoWrap{
+  display:flex;
+  align-items:flex-start;
+  gap:10px;
+}
+#amazon .fbaLineLabel{ flex: 0 0 62%; }
+#amazon .fbaLineLabel input{ width:100%; }
+#amazon .fbaLineResult{
+  flex: 1 1 auto;
+  text-align:right;
+  font-size:18px;
+  font-weight:900;
+  line-height:1.2;
+  padding-top:18px;
+  opacity:.95;
+}
+#amazon .fbaAutoWrap .fbaInputs{ flex: 0 0 62%; }
+#amazon .fbaAutoWrap .fbaLineResult{ padding-top:6px; }
+
+
+/* =========================
+   v1.2.75 — FBA固定金额右侧显示 + 计费重两输入并排
+========================= */
+#amazon .fbaAutoWrap .fbaInputs{
+  display:flex;
+  gap:10px;
+}
+#amazon .fbaAutoWrap .fbaInputs label{
+  flex:1 1 0;
+  margin:0;
+}
+
+
+/* =========================
+   v1.2.75 — 固定金额标题不换行（修复占3行）
+========================= */
+#amazon .fbaLineLabel{
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+}
+#amazon .fbaLineTitle{
+  display:block;
+  white-space:nowrap;
+  line-height:1.1;
+}
+
+
+/* =========================
+   v1.2.75 — 夜间模式下拉框选项可读性修复
+   仅样式：提升 select / option 的前景/背景对比度
+========================= */
+
+/* Dark theme selectors (support both body.dark and data-theme) */
+body.dark select,
+body[data-theme="dark"] select{
+  color: rgba(240,244,255,.92);
+  background: rgba(15,23,42,.55);
+  border-color: rgba(226,232,240,.20);
+}
+
+/* Options list background/foreground (works in most Chromium/Edge/Firefox; Safari varies) */
+body.dark select option,
+body[data-theme="dark"] select option{
+  color: rgba(240,244,255,.94);
+  background: rgba(2,6,23,.95);
+}
+
+/* Hover/selected states (browser support varies; safe defaults) */
+body.dark select option:checked,
+body[data-theme="dark"] select option:checked{
+  background: rgba(59,130,246,.35);
+  color: rgba(240,244,255,.96);
+}
+
+/* Focus ring for dark */
+body.dark select:focus,
+body[data-theme="dark"] select:focus{
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(59,130,246,.25);
+}
+
+
+/* =========================
+   v1.2.75 — 最新汇率更新提示
+========================= */
+.fx-updated{
+  margin-right:6px;
+  padding:2px 6px;
+  border-radius:999px;
+  font-size:12px;
+  font-weight:600;
+  background:rgba(16,185,129,.15);
+  color:#10b981;
+}
+body.dark .fx-updated,
+body[data-theme="dark"] .fx-updated{
+  background:rgba(16,185,129,.18);
+  color:#34d399;
+}
+
+
+/* v1.2.75: badge layout for check */
+.fx-updated{ display:inline-flex; align-items:center; gap:4px; }
+
+
+/* =========================
+   v1.2.75 — 仓库配置费标题不换行 + 计算修复（避免未定义汇率变量）
+========================= */
+#amazon .inlineTitle{
+  white-space: nowrap;
+}
+/* make the label content sit nicely on one line */
+#amazon .row label:has(.inlineTitle){
+  display:flex;
+  align-items:center;
+  gap:6px;
+}
+#amazon .row label:has(.inlineTitle) input{
+  flex: 1 1 auto;
+  min-width: 80px;
+}
+
+
+#amazon label.whCfgLabel{
+  display:flex;
+  align-items:center;
+  gap:6px;
+}
+#amazon label.whCfgLabel input{
+  flex: 1 1 auto;
+  min-width: 80px;
+}
+
+
+/* =========================
+   v1.2.75 — Amazon 右侧浮窗结果（方案C）
+========================= */
+.amzFloat{
+  position: fixed;
+  right: 16px;
+  top: 120px;
+  width: 260px;
+  border-radius: 16px;
+  border: 1px solid rgba(148,163,184,.20);
+  background: rgba(255,255,255,.88);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 12px 28px rgba(0,0,0,.10);
+  z-index: 9999;
+  overflow: hidden;
+  display: none; /* only show when Amazon calc is ready */
+}
+.amzFloat.show{ display:block; }
+.amzFloatHead{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:10px 12px;
+  border-bottom: 1px solid rgba(148,163,184,.16);
+}
+.amzFloatHead .t{
+  font-size: 13px;
+  font-weight: 900;
+  letter-spacing:.2px;
+  opacity:.92;
+}
+.amzFloatToggle{
+  border: 1px solid rgba(148,163,184,.22);
+  background: rgba(148,163,184,.10);
+  color: inherit;
+  border-radius: 10px;
+  width: 30px;
+  height: 26px;
+  cursor: pointer;
+  font-weight: 900;
+  line-height: 1;
+}
+.amzFloatBody{ padding:10px 12px 12px; }
+.amzFloatBody .row{
+  display:flex;
+  align-items:baseline;
+  justify-content:space-between;
+  padding:6px 0;
+}
+.amzFloatBody .k{
+  font-size: 12px;
+  font-weight: 800;
+  opacity:.70;
+}
+.amzFloatBody .v{
+  font-size: 18px;
+  font-weight: 950;
+  letter-spacing:.2px;
+}
+#amzFProfit.pos{ color:#16a34a; }
+#amzFProfit.neg{ color:#ef4444; }
+#amzFVerdict.good{ color:#16a34a; }
+#amzFVerdict.warn{ color:#f59e0b; }
+#amzFVerdict.bad{ color:#ef4444; }
+
+.amzFloat.collapsed .amzFloatBody{ display:none; }
+.amzFloat.collapsed #amzFloatToggle{ transform: rotate(-90deg); }
+
+/* dark */
+body.dark .amzFloat,
+body[data-theme="dark"] .amzFloat{
+  background: rgba(2,6,23,.55);
+  border-color: rgba(226,232,240,.12);
+  box-shadow: 0 16px 34px rgba(0,0,0,.35);
+}
+body.dark .amzFloatToggle,
+body[data-theme="dark"] .amzFloatToggle{
+  background: rgba(226,232,240,.08);
+  border-color: rgba(226,232,240,.16);
+}
+
+/* mobile: move lower and slightly smaller */
+@media (max-width: 820px){
+  .amzFloat{ right: 10px; top: auto; bottom: 14px; width: 240px; }
+}
+
+
+/* =========================
+   v1.2.75 — Amazon 右侧浮窗：仅核算模块显示 + 可拖动 + 样式优化
+========================= */
+.amzFloat{
+  position: fixed;
+  right: 16px;
+  top: 120px;
+  width: 268px;
+  border-radius: 18px;
+  border: 1px solid rgba(148,163,184,.22);
+  background: rgba(255,255,255,.92);
+  backdrop-filter: blur(14px);
+  box-shadow: 0 10px 24px rgba(2,6,23,.10);
+  z-index: 9999;
+  overflow: hidden;
+  display: none;            /* by visibility controller */
+  user-select: none;
+}
+.amzFloat.show{ display:block; }
+
+.amzFloatHead{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:10px 12px;
+  border-bottom: 1px solid rgba(148,163,184,.16);
+  cursor: grab;             /* drag handle */
+}
+.amzFloatHead:active{ cursor: grabbing; }
+
+.amzFloatHead .t{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  font-size: 13px;
+  font-weight: 950;
+  letter-spacing:.2px;
+  opacity:.92;
+}
+.amzFloatHead .pill{
+  font-size:11px;
+  font-weight:900;
+  padding:2px 8px;
+  border-radius:999px;
+  background:rgba(148,163,184,.12);
+  border:1px solid rgba(148,163,184,.16);
+  opacity:.9;
+}
+
+.amzFloatToggle{
+  border: 1px solid rgba(148,163,184,.22);
+  background: rgba(148,163,184,.10);
+  color: inherit;
+  border-radius: 12px;
+  width: 30px;
+  height: 28px;
+  cursor: pointer;
+  font-weight: 950;
+  line-height: 1;
+}
+
+.amzFloatBody{ padding:10px 12px 12px; }
+.amzFloatBody .row{
+  display:flex;
+  align-items:baseline;
+  justify-content:space-between;
+  padding:6px 0;
+}
+.amzFloatBody .k{
+  font-size: 12px;
+  font-weight: 900;
+  opacity:.66;
+}
+.amzFloatBody .v{
+  font-size: 18px;
+  font-weight: 950;
+  letter-spacing:.2px;
+}
+
+#amzFProfit.pos{ color:#16a34a; }
+#amzFProfit.neg{ color:#ef4444; }
+#amzFVerdict.good{ color:#16a34a; }
+#amzFVerdict.warn{ color:#f59e0b; }
+#amzFVerdict.bad{ color:#ef4444; }
+
+.amzFloat.collapsed .amzFloatBody{ display:none; }
+.amzFloat.collapsed #amzFloatToggle{ transform: rotate(-90deg); }
+
+/* dark */
+body.dark .amzFloat,
+body[data-theme="dark"] .amzFloat{
+  background: rgba(2,6,23,.58);
+  border-color: rgba(226,232,240,.12);
+  box-shadow: 0 16px 34px rgba(0,0,0,.40);
+}
+body.dark .amzFloatHead,
+body[data-theme="dark"] .amzFloatHead{
+  border-bottom-color: rgba(226,232,240,.10);
+}
+body.dark .amzFloatHead .pill,
+body[data-theme="dark"] .amzFloatHead .pill{
+  background: rgba(226,232,240,.08);
+  border-color: rgba(226,232,240,.12);
+}
+body.dark .amzFloatToggle,
+body[data-theme="dark"] .amzFloatToggle{
+  background: rgba(226,232,240,.08);
+  border-color: rgba(226,232,240,.16);
+}
+
+/* mobile */
+@media (max-width: 820px){
+  .amzFloat{ width: 246px; right: 10px; top:auto; bottom: 14px; }
+}
+
+
+/* =========================
+   v1.2.75 — Amazon 右侧浮窗：起始贴合右上说明下方 + 收起按钮修复 + 更精致样式
+========================= */
+.amzFloat{
+  position: fixed;
+  right: 16px;
+  top: 120px;
+  width: 272px;
+  border-radius: 18px;
+  border: 1px solid rgba(148,163,184,.22);
+  background: rgba(255,255,255,.94);
+  background-image: linear-gradient(180deg, rgba(255,255,255,.98), rgba(255,255,255,.90));
+  backdrop-filter: blur(16px);
+  box-shadow: 0 18px 40px rgba(2,6,23,.14);
+  z-index: 9999;
+  overflow: hidden;
+  display: none;            /* controlled by IO */
+  user-select: none;
+}
+.amzFloat.show{ display:block; }
+
+.amzFloatHead{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:10px 12px;
+  border-bottom: 1px solid rgba(148,163,184,.14);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.6);
+  cursor: grab;             /* drag handle */
+}
+.amzFloatHead:active{ cursor: grabbing; }
+
+.amzFloatHead .t{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  font-size: 13px;
+  font-weight: 950;
+  letter-spacing:.2px;
+  opacity:.92;
+}
+.amzFloatHead .pill{
+  font-size:11px;
+  font-weight:950;
+  padding:2px 8px;
+  border-radius:999px;
+  background:rgba(59,130,246,.10);
+  border:1px solid rgba(59,130,246,.20);
+  color:rgba(30,64,175,.92);
+}
+
+.amzFloatToggle{
+  border: 1px solid rgba(148,163,184,.22);
+  background: rgba(148,163,184,.10);
+  color: inherit;
+  border-radius: 12px;
+  width: 32px;
+  height: 28px;
+  cursor: pointer;
+  font-weight: 950;
+  line-height: 1;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.amzFloatToggle:hover{ background: rgba(148,163,184,.14); }
+.amzFloatToggle:active{ transform: translateY(1px); }
+
+.amzFloatBody{ padding:10px 12px 12px; }
+.amzFloatBody .row{
+  display:flex;
+  align-items:baseline;
+  justify-content:space-between;
+  padding:7px 0;
+}
+.amzFloatBody .k{
+  font-size: 12px;
+  font-weight: 900;
+  opacity:.64;
+}
+.amzFloatBody .v{
+  font-size: 19px;
+  font-weight: 950;
+  letter-spacing:.2px;
+}
+.amzFloatBody .v.small{ font-size: 16px; font-weight: 950; }
+
+#amzFProfit.pos{ color:#16a34a; }
+#amzFProfit.neg{ color:#ef4444; }
+#amzFVerdict.good{ color:#16a34a; }
+#amzFVerdict.warn{ color:#f59e0b; }
+#amzFVerdict.bad{ color:#ef4444; }
+
+.amzFloat.collapsed .amzFloatBody{ display:none; }
+.amzFloat.collapsed #amzFloatToggle{ transform: rotate(-90deg); }
+
+/* dark */
+body.dark .amzFloat,
+body[data-theme="dark"] .amzFloat{
+  background: rgba(2,6,23,.62);
+  background-image: linear-gradient(180deg, rgba(2,6,23,.70), rgba(2,6,23,.55));
+  border-color: rgba(226,232,240,.12);
+  box-shadow: 0 18px 46px rgba(0,0,0,.42);
+}
+body.dark .amzFloatHead,
+body[data-theme="dark"] .amzFloatHead{
+  border-bottom-color: rgba(226,232,240,.10);
+}
+body.dark .amzFloatHead .pill,
+body[data-theme="dark"] .amzFloatHead .pill{
+  background: rgba(59,130,246,.18);
+  border-color: rgba(59,130,246,.26);
+  color: rgba(191,219,254,.96);
+}
+body.dark .amzFloatToggle,
+body[data-theme="dark"] .amzFloatToggle{
+  background: rgba(226,232,240,.08);
+  border-color: rgba(226,232,240,.16);
+}
+
+/* mobile */
+@media (max-width: 820px){
+  .amzFloat{ width: 248px; right: 10px; top:auto; bottom: 14px; }
+}
+
+</style>
+</head>
+
+<body>
+<div class="page">
+<!-- =========================
+     [HTML:TOPBAR]
+========================= -->
+<header class="topbar">
+  <div class="topBrand">
+    <div class="topTitle">运营工具箱</div>
+    <div class="topSub">单位换算 · 字符处理 · Listing 翻译 · 亚马逊核算</div>
+  </div>
+  <div class="topActions">
+    <button class="themeBtn" id="themeToggle" type="button" aria-label="切换夜视模式">
+      <span class="ic sun">☀</span><span class="ic moon">🌙</span><span class="txt">夜视</span>
+    </button>
+  </div>
+  <div class="topMeta">
+    <span class="topVer">v<span class="topVerNum">1.2.27</span></span>
+  </div>
+</header>
+<!-- =====================================================================================
+  Amazon 运营工具箱（单文件）
+  版本：v1.0.32
+  结构锚点：
+    [APP:VERSION] 版本信息
+    [UI:LAYOUT]   页面结构
+    [UI:STYLE]    CSS 样式
+    [NAV]         左侧导航
+    [PANEL:UNIT]  单位换算
+    [PANEL:COUNT] 字符处理
+    [PANEL:TRAN]  翻译
+    [PANEL:AMZ]   亚马逊核算
+    [UTIL]        通用函数
+    [BOOT]        初始化入口
+===================================================================================== -->
+<div class="app">
+
+  <!-- [HTML:BACKDROP] Mobile sidebar backdrop -->
+  <div class="backdrop" id="backdrop"></div>
+
+  <!-- =========================
+       [HTML:SIDEBAR]
+  ========================= -->
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="t">运营工具箱</div>
+      <div class="s">单位换算 · 字符处理 · Listing 翻译 · 亚马逊核算</div>
+    </div>
+
+    <div class="nav">
+      <!-- [PANEL:UNIT] -->
+<button data-panel="unit" class="active"><span class="btn-ic">📏</span><span class="btn-txt">单位换算</span></button>
+      <!-- [PANEL:COUNT] -->
+<button data-panel="count"><span class="btn-ic">🔤</span><span class="btn-txt">字符处理</span></button>
+      <!-- [PANEL:TRAN] -->
+<button data-panel="translate"><span class="btn-ic">🌐</span><span class="btn-txt">翻译</span></button>
+      <!-- [PANEL:AMZ] -->
+<button data-panel="amazon"><span class="btn-ic">🧮</span><span class="btn-txt">亚马逊核算</span></button>
+    </div>
+
+    <div class="footer"><span>版本</span><b id="verText">1.2.75</b></div>
+  </aside>
+
+  <main class="content">
+
+    <!-- =========================
+         [HTML:MOBILE_BAR]（<=720px 显示）
+    ========================= -->
+    <div class="mbar">
+      <button class="iconBtn" id="btnMenu" aria-label="打开菜单">☰</button>
+      <div class="mtitle">运营工具箱</div>
+      <div class="mver">v<span id="verTextM">1.2.75</span></div>
+      <button class="iconBtn themeIcon" id="themeToggleM" aria-label="切换夜视模式">🌙</button>
+    </div>
+
+    <!-- =========================
+         [HTML:PANEL_UNIT]
+    ========================= -->
+    <section id="unit" class="panel active">
+      <div class="head"><h2>单位换算</h2><button class="btn" id="clearUnit">清空</button></div>
+      <div class="cards">
+        <div class="card">
+          <div class="cardTitle"><h3 style="margin:0">长度换算</h3><span class="badge">默认：cm → inch</span></div>
+          <div class="row">
+            <input id="lenVal" type="number" placeholder="输入数值" />
+            <select id="lenFrom" class="sel">
+              <option value="cm" selected>厘米 (cm)</option><option value="m">米 (m)</option><option value="mm">毫米 (mm)</option><option value="inch">英寸 (inch)</option><option value="ft">英尺 (ft)</option>
+            </select>
+            <span class="swap" id="swapLen">⇄</span>
+            <select id="lenTo" class="sel">
+              <option value="inch" selected>英寸 (inch)</option><option value="cm">厘米 (cm)</option><option value="m">米 (m)</option><option value="mm">毫米 (mm)</option><option value="ft">英尺 (ft)</option>
+            </select>
+          </div>
+          <div id="lenOut" class="result">结果：</div>
+        </div>
+
+        <div class="card">
+          <div class="cardTitle"><h3 style="margin:0">重量换算</h3><span class="badge">默认：g → oz</span></div>
+          <div class="row">
+            <input id="wtVal" type="number" placeholder="输入数值" />
+            <select id="wtFrom" class="sel">
+              <option value="g" selected>克 (g)</option><option value="kg">千克 (kg)</option><option value="lb">磅 (lb)</option><option value="oz">盎司 (oz)</option>
+            </select>
+            <span class="swap" id="swapWt">⇄</span>
+            <select id="wtTo" class="sel">
+              <option value="oz" selected>盎司 (oz)</option><option value="g">克 (g)</option><option value="kg">千克 (kg)</option><option value="lb">磅 (lb)</option>
+            </select>
+          </div>
+          <div id="wtOut" class="result">结果：</div>
+        </div>
+
+        <div class="card">
+          <div class="cardTitle"><h3 style="margin:0">币种换算</h3><span class="badge">默认：USD → CNY</span></div>
+          <div class="row">
+            <input id="fxVal" type="number" placeholder="输入金额" />
+            <select id="fxFrom" class="sel"><option value="$" selected>$ USD</option><option value="¥">¥ CNY</option><option value="€">€ EUR</option><option value="£">£ GBP</option></select>
+            <span class="swap" id="swapFx">⇄</span>
+            <select id="fxTo" class="sel"><option value="¥" selected>¥ CNY</option><option value="$">$ USD</option><option value="€">€ EUR</option><option value="£">£ GBP</option></select>
+            <button class="btn" id="btnFx">获取最新汇率</button>
+          </div>
+          <div id="fxOut" class="result">结果：</div>
+          <div class="hint">当前汇率：1 USD=<span id="rUsd">7.2000</span> CNY；1 EUR=<span id="rEur">7.9000</span> CNY；1 GBP=<span id="rGbp">9.1000</span> CNY（与核算共享）</div>
+          <div class="hint" id="fxStatus"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================
+         [HTML:PANEL_COUNT]
+    ========================= -->
+    <section id="count" class="panel">
+      <div class="head"><h2>字符处理</h2><button class="btn" id="clearCount">清空</button></div>
+
+      <div class="split">
+        <div class="box">
+          <div class="boxHead">
+            <h3>字符数量统计 & 风险词提示</h3>
+            <span class="badge">红线：200 / 250 / 1000</span>
+          </div>
+          <div id="textInputCE" class="ceInput" contenteditable="true" data-placeholder="粘贴或输入需要统计的文本…"></div>
+<textarea id="textInput" style="display:none"></textarea>
+<div class="row" style="margin-top:10px">
+            <span class="pill" id="p200">Title 200</span>
+            <span class="pill" id="p250">Bullet 250</span>
+            <span class="pill" id="p1000">Description 1000</span>
+          </div>
+
+          <div class="stats">
+            <div class="stat"><div class="k">总字符数</div><div class="v" id="cTotal">0</div></div>
+            <div class="stat"><div class="k">不含空格</div><div class="v" id="cNoSp">0</div></div>
+            <div class="stat"><div class="k">英文字符</div><div class="v" id="cEn">0</div></div>
+            <div class="stat"><div class="k">中文字符</div><div class="v" id="cZh">0</div></div>
+            <div class="stat"><div class="k">数字</div><div class="v" id="cNum">0</div></div>
+          </div>
+          <div class="hint" id="riskHint" style="display:none" style="margin-top:10px;display:none"></div>
+          <div class="muted" style="margin-top:8px">说明：红线按“总字符数”判断。</div>
+        </div>
+
+        <div class="box">
+          <div class="boxHead">
+            <h3>亚马逊标题：Title Case（B 规则）</h3>
+            <span class="badge">一键规范标题</span>
+          </div>
+          <div class="row" style="align-items:flex-start">
+            <textarea id="titleIn" placeholder="粘贴你的英文标题" style="flex:1;min-width:260px;height:110px"></textarea>
+            <div style="display:flex;flex-direction:column;gap:8px">
+              <button class="btn" id="btnTitle">一键处理</button>
+              <button class="btn" id="btnCopyTitle">复制结果</button>
+            </div>
+          </div>
+          <textarea id="titleOut" placeholder="处理后的标题" style="width:100%;height:90px;margin-top:10px" readonly></textarea>
+          <div class="muted" style="margin-top:8px">小词（a/an/the/and/or/of/to/in/for…）默认不大写，除非在标题开头/结尾；USB/LED/FBA 等短缩写保持全大写；连字符 - 分段处理。</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================
+         [HTML:PANEL_TRANSLATE]
+    ========================= -->
+    <section id="translate" class="panel">
+      <div class="head"><h2>翻译（专为 Listing）</h2></div>
+      <div class="hint" style="margin-top:0">可选：Google / 百度 / Chat 翻译（无 API，采用网页/提示词方式）。</div>
+
+      <div class="row" style="margin-top:12px;justify-content:space-between">
+        <div class="seg" id="tSeg">
+          <button data-t="google" class="active">谷歌翻译</button>
+          <button data-t="baidu">百度翻译</button>
+          <button data-t="chat">Chat 翻译</button>
+        </div>
+        <div class="row">
+          <span class="badge">默认：中 → 英</span>
+          <select id="tDir" style="height:34px">
+            <option value="zh-en" selected>中文 → English</option>
+            <option value="en-zh">English → 中文</option>
+          </select>
+        </div>
+      </div>
+
+      <div id="tp_google" class="tPane active">
+        <div class="hint" style="margin:0 0 10px 0">内嵌 Google 翻译（部分网络环境可能加载慢）。</div>
+        <iframe id="gFrame" src="https://translate.google.com/?sl=zh-CN&tl=en&op=translate" loading="lazy"></iframe>
+        <div style="margin-top:14px" class="row">
+          <button class="primary" id="btnOpenG">新窗口打开 Google 翻译</button>
+        </div>
+      </div>
+
+      <div id="tp_baidu" class="tPane">
+        <div class="box" style="margin-top:0">
+          <div class="boxHead"><h3>百度翻译（跳转使用）</h3><span class="badge">国内更稳定</span></div>
+          <div class="muted">说明：百度翻译页面通常不允许被 iframe 内嵌（会被浏览器拦截）。这里提供快捷跳转。</div>
+          <div class="row" style="margin-top:10px">
+            <button class="primary" id="btnOpenB">打开百度翻译</button>
+            <span class="muted">（会在新窗口打开）</span>
+          </div>
+        </div>
+      </div>
+
+      <div id="tp_chat" class="tPane">
+        <div class="box" style="margin-top:0">
+          <div class="boxHead"><h3>Chat 翻译（提示词）</h3><span class="badge">更贴近 Listing 语气</span></div>
+          <div class="two">
+            <div>
+              <div class="muted" style="margin-bottom:6px">原文</div>
+              <textarea id="chatSrc" placeholder="粘贴中文/英文文案（标题、五点、描述等）" style="width:100%;height:170px"></textarea>
+            </div>
+            <div>
+              <div class="muted" style="margin-bottom:6px">生成的翻译提示词（可直接复制到 ChatGPT）</div>
+              <textarea id="chatPrompt" class="mono" readonly style="width:100%;height:170px"></textarea>
+            </div>
+          </div>
+          <div class="row" style="margin-top:10px">
+            <button class="btn" id="btnGenPrompt">生成提示词</button>
+            <button class="btn" id="btnCopyPrompt">复制提示词</button>
+            <button class="primary" id="btnOpenChat">打开 ChatGPT</button>
+          </div>
+          <div class="muted" style="margin-top:8px">提示：如果你希望更“本地化/更强转化”，我也可以帮你把提示词做成可配置模板（比如：类目、受众、禁词、风格）。</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================
+         [HTML:PANEL_AMAZON]
+    ========================= -->
+    <section id="amazon" class="panel">
+      <div class="head headAmazon"><h2>亚马逊核算</h2><div class="headRight"><div class="stateLegend stateLegendTop" id="amzLegend">
+        <span class="dot red"></span><span class="lg">必填未填</span>
+        <span class="dot yellow"></span><span class="lg">默认值</span>
+        <span class="dot green"></span><span class="lg">已填(非默认)</span>
+</div><button class="btn" id="clearAmazon">清空</button></div></div>
+      <div class="hint" style="margin-top:0">按单个订单估算：售价、采购价、头程（计费重/固定）、佣金、VAT、退货、广告、仓库配置费、FBA（简化）。</div>
+
+      <h3>基础输入</h3>
+<div class="row">
+        <label>售价币种<select id="sellCur"><option value="$" selected>$ USD</option><option value="€">€ EUR</option><option value="£">£ GBP</option><option value="¥">¥ CNY</option></select></label>
+        <label>竞品售价<input id="sellPrice" type="number" step="0.01" placeholder="29.99" /></label>
+        <label>采购币种<select id="buyCur"><option value="¥" selected>¥ CNY</option><option value="$">$ USD</option><option value="€">€ EUR</option><option value="£">£ GBP</option></select></label>
+        <label>采购价<input id="buyCost" type="number" step="0.01" placeholder="8.50" /></label>
+      </div>
+
+      <div class="row rateRow">
+        <label>1 USD=<input id="usdToCny" type="number" step="0.0001" value="7.2000" />CNY</label>
+        <label>1 EUR=<input id="eurToCny" type="number" step="0.0001" value="7.9000" />CNY</label>
+        <label>1 GBP=<input id="gbpToCny" type="number" step="0.0001" value="9.1000" />CNY</label>
+      </div>
+      <div class="hint"><span id="fxUpdatedBadge" class="fx-updated" style="display:none;">✓ 已更新最新汇率（<span id="fxUpdatedDate"></span>）</span>汇率与「币种换算」同步，核算统一按 CNY。</div>
+
+      <h3>重量与尺寸</h3>
+      <div class="row">
+        <label>实重(kg)<input id="wtKg" type="number" step="0.001" placeholder="0.45" /></label>
+        <label>长(cm)<input id="lenCm" type="number" step="0.1" placeholder="25" /></label>
+        <label>宽(cm)<input id="widCm" type="number" step="0.1" placeholder="18" /></label>
+        <label>高(cm)<input id="heiCm" type="number" step="0.1" placeholder="6" /></label>
+      </div>
+
+      <h3>头程（按计费重，人民币）</h3>
+      <div class="row">
+        <label>体积重系数<input id="volDiv" type="number" step="1" value="6000" /></label>
+        <label>单价(每kg,CNY)<input id="shipPerKg" type="number" step="0.01" value="10" /></label>
+        <label>固定头程(每单,CNY)<input id="shipFixed" type="number" step="0.01" value="0" /></label>
+      </div>
+      <div class="hint">体积重=长×宽×高÷系数；计费重=max(实重,体积重)。固定头程>0 时优先使用固定头程。</div>
+
+      <h3>平台与风险</h3>
+      <div class="row">
+        <label>类目佣金(%)<input id="refPct" type="number" step="0.01" value="15" /></label>
+        <label>站点<select id="vatRegion"><option value="US">美区</option><option value="EU" selected>欧区</option></select></label>
+        <label>VAT(%)<input id="vatPct" type="number" step="0.01" value="19" /></label>
+        <label>退货率(%)<input id="retRate" type="number" step="0.01" value="5" /></label>
+        <label>广告占比(%)<input id="adPct" type="number" step="0.01" value="15" /></label>
+        <label class="whCfgLabel"><span class="inlineTitle">仓库配置费（<span id="whCfgUnit">$</span>）</span><input id="whCfgFee" type="number" step="0.01" value="1" /></label>
+      </div>
+
+      <h3>FBA（简化）</h3>
+      <div class="row fbaRow" id="fbaRow">
+        <div class="fbaModeBox active" data-mode="amount">
+          <div class="fbaModeTop"><span class="fbaIc">💰</span><span class="fbaModeName">固定金额</span></div>
+          <div class="fbaLine"><label class="fbaLineLabel"><span class="fbaLineTitle">固定金额（<span id="fbaAmountUnit">$</span>）</span><input id="fbaAmount" type="number" step="0.01" placeholder="0" /></label><div class="fbaLineResult"><span id="fbaAmountShow">—</span></div></div>
+          <div class="fbaModeHint">输入固定 FBA 金额；输入即自动选中该模式</div>
+        </div>
+
+        <div class="fbaModeBox" data-mode="percent">
+          <div class="fbaModeTop"><span class="fbaIc">％</span><span class="fbaModeName">按售价%</span></div>
+          <div class="fbaLine"><label class="fbaLineLabel">百分比(%)<input id="fbaPct" type="number" step="0.01" placeholder="0" /></label><div class="fbaLineResult"><span id="fbaPctAmt">—</span></div></div>
+<div class="fbaModeHint">输入百分比（如 12）即按售价比例计算</div>
+        </div>
+
+        <div class="fbaModeBox" data-mode="auto">
+          <div class="fbaModeTop"><span class="fbaIc">⚖️</span><span class="fbaModeName">按计费重</span></div>
+          <div class="fbaAutoWrap"><div class="fbaInputs">
+            <label>每kg费用(按售价币种)<input id="fbaPerKg" type="number" step="0.01" placeholder="0" /></label>
+            <label>固定FBA(按售价币种)<input id="fbaFixed" type="number" step="0.01" placeholder="0" /></label>
+          </div><div class="fbaLineResult"><span id="fbaAutoAmt">—</span></div></div>
+<div class="fbaModeHint">输入任一项即按「计费重×每kg + 固定FBA」计算</div>
+        </div>
+      </div>
+
+      <h3>结果（实时）</h3>
+      <div class="amzResGrid">
+        <div class="amzResItem">
+          <div class="amzResK">计费重</div>
+          <div class="amzResV"><span id="oChargeW">0</span><span class="amzResUnit">kg</span></div>
+        </div>
+        <div class="amzResItem"><div class="amzResK">头程</div><div class="amzResV"><span id="oShip">0</span></div></div>
+        <div class="amzResItem"><div class="amzResK">佣金</div><div class="amzResV"><span id="oRef">0</span></div></div>
+        <div class="amzResItem"><div class="amzResK">VAT</div><div class="amzResV"><span id="oVat">0</span></div></div>
+        <div class="amzResItem"><div class="amzResK">广告</div><div class="amzResV"><span id="oAd">0</span></div></div>
+        <div class="amzResItem"><div class="amzResK">仓库配置费</div><div class="amzResV"><span id="oWhCfg">0</span></div></div>
+        <div class="amzResItem"><div class="amzResK">FBA</div><div class="amzResV"><span id="oFba">0</span></div></div>
+
+        <div class="amzResItem amzResItemBig">
+          <div class="amzResK">利润</div>
+          <div class="amzResV"><span id="oProfit" class="amzProfit">0</span></div>
+        </div>
+        <div class="amzResItem amzResItemBig">
+          <div class="amzResK">利润率</div>
+          <div class="amzResV"><span id="oMargin" class="amzMargin">0%</span></div>
+        </div>
+        <div class="amzResItem">
+          <div class="amzResK">可承受广告</div>
+          <div class="amzResV"><span id="oMaxAdPct" class="amzMaxAd">0%</span></div>
+        </div>
+        <div class="amzResItem amzResItemBig">
+          <div class="amzResK">结论</div>
+          <div class="amzResV"><span id="oAdVerdict" class="amzVerdict">-</span></div>
+        </div>
+      </div>
+      <div class="hint" id="amazonNote"></div>
+    </section>
+
+  </main>
+</div>
+
+<script>/* [APP:CORE] v1.0.32 - 锚点整理，不改功能 */
+
+(() => {
+  'use strict';
+
+  /* =========================
+     [JS:CONFIG] 版本与常量
+  ========================= */
+  const metaVer = document.querySelector('meta[name="app-version"]');
+  const APP_VERSION = metaVer?.content || 'dev';
+
+  const Config = {
+    version: APP_VERSION,
+    fxStorageKey: 'toolbox_fx_rates_v2',
+    lenRate: { m: 1, cm: 0.01, mm: 0.001, inch: 0.0254, ft: 0.3048 },
+    wtRate: { kg: 1, g: 0.001, lb: 0.45359237, oz: 0.0283495 },
+    smallWords: new Set(['a','an','the','and','or','but','nor','for','so','yet','as','at','by','in','of','on','to','up','via','per','from','into','over','with','without','vs','vs.']),
+    limits: { title: 200, bullet: 250, desc: 1000 },
+  };
+
+  /* =========================
+     [JS:HELPERS] 工具函数
+  ========================= */
+  const $ = (id) => document.getElementById(id);
+  const num = (v) => {
+    const x = parseFloat(v);
+    return Number.isFinite(x) ? x : 0;
+  };
+  const fmt = (sym, v) => `${sym}${(Number.isFinite(v) ? v : 0).toFixed(2)}`;
+
+  const isWhitespaceCode = (code) =>
+    code === 9 || code === 10 || code === 11 || code === 12 || code === 13 || code === 32;
+
+  const splitByWhitespace = (s) => {
+    const out = [];
+    let cur = '';
+    for (let i = 0; i < s.length; i++) {
+      const code = s.charCodeAt(i);
+      if (isWhitespaceCode(code)) {
+        if (cur) { out.push(cur); cur = ''; }
+      } else {
+        cur += s[i];
+      }
+    }
+    if (cur) out.push(cur);
+    return out;
+  };
+
+
+  /* =========================
+     [JS:THEME] 夜视深色主题（方案A）v1.2.26
+     - A1 手动切换（日/夜按钮）
+     - 默认：夜视开启（本文件为夜视版）
+  ========================= */
+  const Theme = {
+    key: 'toolbox_theme_mode',
+    mode: 'dark', // 'dark' | 'light'
+    apply(mode) {
+      Theme.mode = (mode === 'light') ? 'light' : 'dark';
+      document.body.classList.toggle('dark', Theme.mode === 'dark');
+
+      const btn = $('themeToggle');
+      if (btn) btn.setAttribute('aria-label', Theme.mode === 'dark' ? '切换到日间模式' : '切换到夜视模式');
+
+      const btnM = $('themeToggleM');
+      if (btnM) btnM.textContent = Theme.mode === 'dark' ? '☀' : '🌙';
+
+      // 顶部按钮文案
+      const txt = document.querySelector('#themeToggle .txt');
+      if (txt) txt.textContent = Theme.mode === 'dark' ? '夜视' : '日间';
+    },
+    load() {
+      try {
+        const v = localStorage.getItem(Theme.key);
+        if (v === 'light' || v === 'dark') return v;
+      } catch {}
+      return null;
+    },
+    save() {
+      try { localStorage.setItem(Theme.key, Theme.mode); } catch {}
+    },
+    toggle() {
+      Theme.apply(Theme.mode === 'dark' ? 'light' : 'dark');
+      Theme.save();
+    },
+    init() {
+      // 本文件默认夜视；如用户之前存过偏好，则以偏好为准
+      const saved = Theme.load();
+      Theme.apply(saved || 'dark');
+
+      const btn = $('themeToggle');
+      if (btn) btn.addEventListener('click', Theme.toggle);
+
+      const btnM = $('themeToggleM');
+      if (btnM) btnM.addEventListener('click', Theme.toggle);
+    },
+  };
+
+  /* =========================
+     [JS:FX] 汇率模块（与核算共享）
+  ========================= */
+  const FX = {
+    load() {
+      try {
+        const raw = localStorage.getItem(Config.fxStorageKey);
+        if (!raw) return null;
+        const o = JSON.parse(raw);
+        const usd = Number(o.usd), eur = Number(o.eur), gbp = Number(o.gbp);
+        if (!Number.isFinite(usd) || !Number.isFinite(eur) || !Number.isFinite(gbp)) return null;
+        return { usd, eur, gbp, date: o.date || '' };
+      } catch { return null; }
+    },
+    save(usd, eur, gbp, date) {
+      try {
+        localStorage.setItem(Config.fxStorageKey, JSON.stringify({ usd, eur, gbp, date, at: new Date().toISOString() }));
+      } catch {}
+    },
+    rateToCny(sym) {
+      if (sym === '¥') return 1;
+      if (sym === '$') return Math.max(0, num($('usdToCny')?.value));
+      if (sym === '€') return Math.max(0, num($('eurToCny')?.value));
+      if (sym === '£') return Math.max(0, num($('gbpToCny')?.value));
+      return 0;
+    },
+    convert(amount, from, to) {
+      const fr = FX.rateToCny(from);
+      const tr = FX.rateToCny(to);
+      if (fr <= 0 || tr <= 0) return 0;
+      return (amount * fr) / tr;
+    },
+    syncHint() {
+      $('rUsd').textContent = ($('usdToCny')?.value || '7.2000');
+      $('rEur').textContent = ($('eurToCny')?.value || '7.9000');
+      $('rGbp').textContent = ($('gbpToCny')?.value || '9.1000');
+    },
+    setStatus(msg, isErr) {
+      $('fxStatus').textContent = msg || '';
+      $('fxStatus').style.color = isErr ? '#b91c1c' : '#6b7280';
+    },
+    apply(usd, eur, gbp) {
+      if ($('usdToCny')) $('usdToCny').value = Number(usd).toFixed(4);
+      if ($('eurToCny')) $('eurToCny').value = Number(eur).toFixed(4);
+      if ($('gbpToCny')) $('gbpToCny').value = Number(gbp).toFixed(4);
+      FX.syncHint();
+      Unit.updateFx();
+      Amazon.update();
+    },
+    async fetchLatest(auto) {
+      const last = FX.load();
+      try {
+        FX.setStatus(auto ? '打开页面自动获取最新汇率中…' : '正在获取最新汇率…', false);
+        const [u, e, g] = await Promise.all([
+          fetch('https://api.frankfurter.dev/v1/latest?base=USD&symbols=CNY').then(r => r.json()),
+          fetch('https://api.frankfurter.dev/v1/latest?base=EUR&symbols=CNY').then(r => r.json()),
+          fetch('https://api.frankfurter.dev/v1/latest?base=GBP&symbols=CNY').then(r => r.json()),
+        ]);
+        const usd = u && u.rates ? u.rates.CNY : undefined;
+        const eur = e && e.rates ? e.rates.CNY : undefined;
+        const gbp = g && g.rates ? g.rates.CNY : undefined;
+        if (!Number.isFinite(usd) || !Number.isFinite(eur) || !Number.isFinite(gbp)) throw new Error('bad payload');
+        FX.apply(usd, eur, gbp);
+        FX.save(Number(usd), Number(eur), Number(gbp), u && u.date ? u.date : '');
+        FX.setStatus(`✅ 已更新最新汇率（${u && u.date ? u.date : '未知日期'}）`, false);
+      } catch {
+        if (last) {
+          FX.apply(last.usd, last.eur, last.gbp);
+          FX.setStatus(`⚠️ 获取失败，已使用上次汇率${last.date ? `（${last.date}）` : ''}。`, true);
+        } else {
+          FX.setStatus('⚠️ 获取失败，当前使用页面默认汇率。', true);
+        }
+      }
+    },
+  };
+
+  /* =========================
+     [JS:UNIT] 单位换算模块
+  ========================= */
+  const Unit = {
+    swap(a, b, after) {
+      const A = $(a), B = $(b);
+      const tmp = A.value;
+      A.value = B.value;
+      B.value = tmp;
+      after();
+    },
+    updateLen() {
+      const v = parseFloat($('lenVal').value);
+      if (!Number.isFinite(v)) { $('lenOut').textContent = '结果：'; return; }
+      const a = $('lenFrom').value;
+      const b = $('lenTo').value;
+      $('lenOut').textContent = `结果：${(v * Config.lenRate[a] / Config.lenRate[b]).toFixed(4)} ${b}`;
+    },
+    updateWt() {
+      const v = parseFloat($('wtVal').value);
+      if (!Number.isFinite(v)) { $('wtOut').textContent = '结果：'; return; }
+      const a = $('wtFrom').value;
+      const b = $('wtTo').value;
+      $('wtOut').textContent = `结果：${(v * Config.wtRate[a] / Config.wtRate[b]).toFixed(4)} ${b}`;
+    },
+    updateFx() {
+      FX.syncHint();
+      const v = parseFloat($('fxVal').value);
+      if (!Number.isFinite(v)) { $('fxOut').textContent = '结果：'; return; }
+      const from = $('fxFrom').value;
+      const to = $('fxTo').value;
+      $('fxOut').textContent = `结果：${to}${FX.convert(v, from, to).toFixed(4)}`;
+    },
+    clear() {
+      $('lenVal').value = '';
+      $('wtVal').value = '';
+      $('fxVal').value = '';
+      $('lenFrom').value = 'cm';
+      $('lenTo').value = 'inch';
+      $('wtFrom').value = 'g';
+      $('wtTo').value = 'oz';
+      $('fxFrom').value = '$';
+      $('fxTo').value = '¥';
+      Unit.updateLen();
+      Unit.updateWt();
+      Unit.updateFx();
+    },
+    init() {
+      // v1.2.6 风险词高亮层滚动同步
+      const __ta = $('textInput');
+      if(__ta){ __ta.addEventListener('scroll', ()=>{ if(Count.updateRiskHighlight) Count.updateRiskHighlight(__ta.value); }); }
+
+      ['lenVal','lenFrom','lenTo'].forEach(id => $(id).addEventListener('input', Unit.updateLen));
+      ['lenFrom','lenTo'].forEach(id => $(id).addEventListener('change', Unit.updateLen));
+      $('swapLen').addEventListener('click', () => Unit.swap('lenFrom','lenTo', Unit.updateLen));
+
+      ['wtVal','wtFrom','wtTo'].forEach(id => $(id).addEventListener('input', Unit.updateWt));
+      ['wtFrom','wtTo'].forEach(id => $(id).addEventListener('change', Unit.updateWt));
+      $('swapWt').addEventListener('click', () => Unit.swap('wtFrom','wtTo', Unit.updateWt));
+
+      ['fxVal','fxFrom','fxTo','usdToCny','eurToCny','gbpToCny'].forEach(id =>
+        $(id).addEventListener('input', () => { Unit.updateFx(); Amazon.update(); })
+      );
+      ['fxFrom','fxTo'].forEach(id => $(id).addEventListener('change', Unit.updateFx));
+      $('swapFx').addEventListener('click', () => Unit.swap('fxFrom','fxTo', Unit.updateFx));
+      $('btnFx').addEventListener('click', () => FX.fetchLatest(false));
+
+      $('clearUnit').addEventListener('click', Unit.clear);
+
+      Unit.updateLen();
+      Unit.updateWt();
+      Unit.updateFx();
+
+// v1.2.19：contenteditable 输入框（内联高亮风险词）
+const ce = $('textInputCE');
+const ta = $('textInput');
+if (ce && ta){
+  const onChange = ()=>{ Count.syncCEToTextareaAndHighlight(); Count.update(); };
+  ce.addEventListener('input', onChange);
+  ce.addEventListener('keyup', onChange);
+  ce.addEventListener('click', ()=>{ /* 仅刷新提示不改内容 */ });
+  // 纯文本粘贴
+  ce.addEventListener('paste', (e)=>{
+    e.preventDefault();
+    const text = (e.clipboardData || window.clipboardData).getData('text/plain');
+    document.execCommand('insertText', false, text);
+  });
+  // 初次同步
+  setTimeout(()=>{ Count.syncCEToTextareaAndHighlight(); Count.update(); }, 0);
+}
+    },
+  };
+
+  /* =========================
+     [JS:COUNT] 字符处理模块
+  ========================= */
+  const Count = {
+    setPills(total) {
+      $('p200').classList.toggle('over', total > Config.limits.title);
+      $('p250').classList.toggle('over', total > Config.limits.bullet);
+      $('p1000').classList.toggle('over', total > Config.limits.desc);
+    },
+    /* ---- 合规/高风险词提示（嵌入字符数量统计） v1.2.3 ---- */
+riskWords: [
+      'best',
+      'top',
+      'top-rated',
+      'no.1',
+      '#1',
+      'number one',
+      'ultimate',
+      'perfect',
+      'flawless',
+      'unbeatable',
+      'premium',
+      'highest quality',
+      'superior',
+      'better',
+      'better than',
+      'better than others',
+      'most',
+      'world\'s',
+      'leading',
+      'exclusive',
+      'guarantee',
+      'guaranteed',
+      'warranty',
+      'lifetime warranty',
+      'money back',
+      'refund',
+      'risk free',
+      'no risk',
+      '100% satisfaction',
+      'satisfaction guaranteed',
+      'forever',
+      'free',
+      'bonus',
+      'gift',
+      'discount',
+      'sale',
+      'save big',
+      'cheap',
+      'lowest price',
+      'limited time',
+      'special offer',
+      'deal',
+      'official',
+      'officially',
+      'amazon',
+      'prime',
+      'amazon\'s choice',
+      'amazons choice',
+      'best seller',
+      'bestseller',
+      'cure',
+      'treat',
+      'heal',
+      'prevent',
+      'diagnose',
+      'therapy',
+      'therapeutic',
+      'medical',
+      'medical grade',
+      'clinically proven',
+      'clinically tested',
+      'antibacterial',
+      'antiviral',
+      'kills bacteria',
+      'kills viruses',
+      'sterilize',
+      'sterilises',
+      'disinfect',
+      'disinfectant',
+      'pain relief',
+      'anti-inflammatory',
+      'relieve pain',
+      'safe',
+      'safety',
+      'certified',
+      'certificate',
+      'approved',
+      'fda',
+      'ce',
+      'rohs',
+      'ul listed',
+      'lab tested',
+      'tested',
+      'non-toxic',
+      'toxin free',
+      'bpa free',
+      'lead free',
+      'sex',
+      'adult',
+      'erotic',
+      'drug',
+      'cannabis',
+      'thc',
+      'cbd',
+      'weapon',
+      'gun',
+      'competitor',
+      'brand',
+      'better than competitors',
+      'beats'
+    ],
+findRisks(text) {
+  const t = (text || '').toLowerCase();
+  const hits = [];
+  for (let i = 0; i < Count.riskWords.length; i++) {
+    const w = Count.riskWords[i];
+    if (!w) continue;
+    if (t.includes(w)) hits.push(w);
+  }
+  // 去重
+  return Array.from(new Set(hits));
+},
+updateRiskHint(text) {
+  const box = $('riskHint');
+  if (!box) return;
+  const hits = Count.findRisks(text);
+  if (!hits.length){
+    box.style.display = 'none';
+    box.textContent = '';
+    return;
+  }
+  box.style.display = 'block';
+  box.textContent = `⚠️ 高风险词提示：检测到 ${hits.slice(0,16).join(', ')}${hits.length>8?'…':''}（仅提示，不代表一定违规）`;
+},
+
+// v1.2.30 兼容兜底：旧叠层高亮函数在当前版本不再需要，保留空实现避免调用时报错
+updateRiskHighlight(text){ /* noop */ },
+
+    update() {
+      const t = $('textInput').value || '';
+      const total = t.length;
+
+      let noWs = 0;
+      let en = 0;
+      let zh = 0;
+      let numCount = 0;
+
+      for (let i = 0; i < t.length; i++) {
+        const code = t.charCodeAt(i);
+        if (!isWhitespaceCode(code)) noWs += 1;
+        if ((code >= 65 && code <= 90) || (code >= 97 && code <= 122)) en += 1;
+        if (code >= 48 && code <= 57) numCount += 1;
+        const ch = t[i];
+        if (ch >= '一' && ch <= '龥') zh += 1;
+      }
+
+      $('cTotal').textContent = String(total);
+      $('cNoSp').textContent = String(noWs);
+      $('cEn').textContent = String(en);
+      $('cZh').textContent = String(zh);
+      $('cNum').textContent = String(numCount);
+
+      Count.setPills(total);
+
+      // v1.2.18 风险词预览（当前已不使用叠层预览；保留钩子以兼容旧版本）
+      // if (typeof Count.updateRiskColor === 'function') Count.updateRiskColor(t);
+
+      // v1.2.3 合规/高风险词提示（嵌入数量统计）
+      Count.updateRiskHint(t);
+
+      // 兼容：部分美化版移除了旧的 risk highlight layer，这里做防御式调用，避免脚本中断
+      if (typeof Count.updateRiskHighlight === 'function') Count.updateRiskHighlight(t);
+},
+
+
+updateRiskColor(text){
+  var box = $('riskColorPreview');
+  if(!box) return;
+  var raw = (text||'').toString();
+  if(!raw){
+    box.style.display='none';
+    box.innerHTML='';
+    return;
+  }
+  var safe = raw.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  var words = (Count.riskWords||[]).filter(Boolean).map(function(w){return w.toString();})
+    .sort(function(a,b){return b.length-a.length;});
+  if(!words.length){
+    box.style.display='none'; box.innerHTML=''; return;
+  }
+  var esc = function(s){return s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');};
+  var re2 = new RegExp('(' + words.map(esc).join('|') + ')','gi');
+  var html = safe.replace(re2, '<span class="riskColor">$1</span>');
+  if (html === safe){
+    box.style.display='none';
+    box.innerHTML='';
+    return;
+  }
+  box.style.display='block';
+  box.innerHTML = '风险词预览（黄色加粗）：\n' + html;
+},
+
+/* ---- v1.2.19：contenteditable 输入框内联高亮风险词 ---- */
+_ceUpdating: false,
+getCEText(){
+  const ce = $('textInputCE');
+  return ce ? (ce.innerText || '').replace(/\u00A0/g,' ') : '';
+},
+// 获取当前光标在纯文本中的偏移（字符数）
+getCaretOffsetInCE(){
+  const ce = $('textInputCE');
+  const sel = window.getSelection && window.getSelection();
+  if(!ce || !sel || sel.rangeCount===0) return 0;
+  const range = sel.getRangeAt(0).cloneRange();
+  range.selectNodeContents(ce);
+  range.setEnd(sel.getRangeAt(0).endContainer, sel.getRangeAt(0).endOffset);
+  return range.toString().length;
+},
+// 将光标恢复到纯文本偏移处
+setCaretOffsetInCE(offset){
+  const ce = $('textInputCE');
+  const sel = window.getSelection && window.getSelection();
+  if(!ce || !sel) return;
+  let current = 0;
+  const walker = document.createTreeWalker(ce, NodeFilter.SHOW_TEXT, null);
+  let node;
+  while((node = walker.nextNode())){
+    const next = current + node.nodeValue.length;
+    if(offset <= next){
+      const r = document.createRange();
+      r.setStart(node, Math.max(0, offset - current));
+      r.collapse(true);
+      sel.removeAllRanges();
+      sel.addRange(r);
+      return;
+    }
+    current = next;
+  }
+  // fallback: end
+  const r = document.createRange();
+  r.selectNodeContents(ce);
+  r.collapse(false);
+  sel.removeAllRanges();
+  sel.addRange(r);
+},
+// 根据 riskWords 渲染高亮 HTML
+renderRiskHighlight(text){
+  const esc = (s)=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  let safe = esc(text || '');
+  const words = (Count.riskWords||[]).filter(Boolean).map(w=>w.toString()).sort((a,b)=>b.length-a.length);
+  if(!words.length) return safe;
+  const escRe = (s)=>s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+  const re2 = new RegExp('(' + words.map(escRe).join('|') + ')', 'gi');
+  safe = safe.replace(re2, '<span class="riskWord">$1</span>');
+  // 保留换行
+  return safe.replace(/\n/g,'<br>');
+},
+syncCEToTextareaAndHighlight(){
+  const ce = $('textInputCE');
+  const ta = $('textInput');
+  if(!ce || !ta) return;
+  if(Count._ceUpdating) return;
+  Count._ceUpdating = true;
+
+  const plain = Count.getCEText();
+  const caret = Count.getCaretOffsetInCE();
+
+  // 同步给原逻辑 textarea
+  ta.value = plain;
+
+  // 高亮渲染（会重写 innerHTML）
+  ce.innerHTML = Count.renderRiskHighlight(plain);
+
+  // 恢复光标
+  Count.setCaretOffsetInCE(caret);
+
+  Count._ceUpdating = false;
+},
+
+    /* ---- Title Case：B 规则（简化版） ---- */
+    isAllCapsShort(token) {
+      let letters = '';
+      for (let i = 0; i < token.length; i++) {
+        const c = token.charCodeAt(i);
+        if ((c >= 65 && c <= 90) || (c >= 97 && c <= 122)) letters += token[i];
+      }
+      if (!letters || letters.length > 5) return false;
+      return letters === letters.toUpperCase();
+    },
+    capFirstLowerRest(token) {
+      const lower = token.toLowerCase();
+      for (let i = 0; i < lower.length; i++) {
+        const c = lower.charCodeAt(i);
+        if (c >= 97 && c <= 122) {
+          return lower.slice(0, i) + lower[i].toUpperCase() + lower.slice(i + 1);
+        }
+      }
+      return lower;
+    },
+    titleSeg(seg, isFirst, isLast) {
+      if (!seg) return seg;
+      let hasLetter = false;
+      for (let i = 0; i < seg.length; i++) {
+        const c = seg.charCodeAt(i);
+        if ((c >= 65 && c <= 90) || (c >= 97 && c <= 122)) { hasLetter = true; break; }
+      }
+      if (!hasLetter) return seg;
+      if (Count.isAllCapsShort(seg)) return seg;
+
+      const lower = seg.toLowerCase();
+      let letters = '';
+      for (let i = 0; i < lower.length; i++) {
+        const c = lower.charCodeAt(i);
+        if (c >= 97 && c <= 122) letters += lower[i];
+      }
+
+      if (!isFirst && !isLast && letters && Config.smallWords.has(letters)) return lower;
+      return Count.capFirstLowerRest(seg);
+    },
+    toTitleCase(text) {
+      const s = (text || '').trim();
+      if (!s) return '';
+      const tokens = splitByWhitespace(s);
+      const last = tokens.length - 1;
+      const out = [];
+      for (let i = 0; i < tokens.length; i++) {
+        const tok = tokens[i];
+        const parts = tok.split('-');
+        const partsOut = [];
+        for (let j = 0; j < parts.length; j++) {
+          partsOut.push(Count.titleSeg(parts[j], i === 0 && j === 0, i === last && j === parts.length - 1));
+        }
+        out.push(partsOut.join('-'));
+      }
+      return out.join(' ');
+    },
+    applyTitle() {
+      $('titleOut').value = Count.toTitleCase($('titleIn').value);
+    },
+    async copyTitle() {
+      const v = $('titleOut').value || '';
+      if (!v) return;
+      try {
+        await navigator.clipboard.writeText(v);
+      } catch {
+        $('titleOut').focus();
+        $('titleOut').select();
+        document.execCommand('copy');
+      }
+    },
+    clear() {
+      $('textInput').value = '';
+            const ce = $('textInputCE'); if(ce){ ce.innerHTML=''; }
+if($('riskColorPreview')){ $('riskColorPreview').style.display='none'; $('riskColorPreview').innerHTML=''; }
+      $('titleIn').value = '';
+      $('titleOut').value = '';
+      Count.update();
+          if($('riskHint')){ $('riskHint').style.display='none'; $('riskHint').textContent=''; }
+          if($('')) $('').textContent='';
+},
+    init() {
+      $('textInput').addEventListener('input', Count.update);
+      $('titleIn').addEventListener('input', Count.applyTitle);
+      $('btnTitle').addEventListener('click', Count.applyTitle);
+      $('btnCopyTitle').addEventListener('click', Count.copyTitle);
+      $('clearCount').addEventListener('click', Count.clear);
+      Count.update();
+    },
+  };
+
+  /* =========================
+     [JS:TRANSLATE] 翻译模块
+  ========================= */
+  const Translate = {
+    state: 'google',
+    dir() { return $('tDir') ? $('tDir').value : 'zh-en'; },
+    setTab(name) {
+      Translate.state = name;
+      document.querySelectorAll('#tSeg button').forEach(b => b.classList.toggle('active', b.dataset.t === name));
+      $('tp_google').classList.toggle('active', name === 'google');
+      $('tp_baidu').classList.toggle('active', name === 'baidu');
+      $('tp_chat').classList.toggle('active', name === 'chat');
+      if (name === 'google') Translate.updateGoogle();
+      if (name === 'chat') Translate.genPrompt();
+    },
+    updateGoogle() {
+      const d = Translate.dir();
+      const sl = d === 'en-zh' ? 'en' : 'zh-CN';
+      const tl = d === 'en-zh' ? 'zh-CN' : 'en';
+      const url = `https://translate.google.com/?sl=${encodeURIComponent(sl)}&tl=${encodeURIComponent(tl)}&op=translate`;
+      const fr = $('gFrame');
+      if (fr && fr.src !== url) fr.src = url;
+    },
+    openGoogle() {
+      const d = Translate.dir();
+      const sl = d === 'en-zh' ? 'en' : 'zh-CN';
+      const tl = d === 'en-zh' ? 'zh-CN' : 'en';
+      window.open(`https://translate.google.com/?sl=${sl}&tl=${tl}&op=translate`, '_blank');
+    },
+    openBaidu() {
+      const d = Translate.dir();
+      const hash = d === 'en-zh' ? '#en/zh/' : '#zh/en/';
+      window.open(`https://fanyi.baidu.com/${hash}`, '_blank');
+    },
+    genPrompt() {
+      const src = ($('chatSrc')?.value || '').trim();
+      const d = Translate.dir();
+      const toEn = d === 'zh-en';
+      const prompt = [
+        '你是一名资深亚马逊Listing文案翻译与本地化专家。',
+        `请把下面内容翻译为${toEn ? '英文' : '中文'}，要求：`,
+        '1) 保持卖点清晰、语气自然、适合美国站点购物语境（如为中文则适合中文读者）。',
+        '2) 术语/单位/数字不要翻错；品牌名、型号、缩写保持原样。',
+        '3) 尽量使用电商常用表达，避免机翻腔；必要时做轻度本地化但不改变事实。',
+        '4) 输出仅给翻译结果，不要解释。',
+        '',
+        '【待翻译内容】',
+        src || '(此处粘贴你的文本)',
+      ].join('\n');
+      if ($('chatPrompt')) $('chatPrompt').value = prompt;
+    },
+    async copyPrompt() {
+      const v = $('chatPrompt')?.value || '';
+      if (!v) return;
+      try { await navigator.clipboard.writeText(v); }
+      catch {
+        $('chatPrompt').focus();
+        $('chatPrompt').select();
+        document.execCommand('copy');
+      }
+    },
+    openChat() { window.open('https://chatgpt.com/', '_blank'); },
+    init() {
+      document.querySelectorAll('#tSeg button').forEach(b => b.addEventListener('click', () => Translate.setTab(b.dataset.t)));
+      $('tDir').addEventListener('change', () => { Translate.updateGoogle(); Translate.genPrompt(); });
+
+      $('btnOpenG').addEventListener('click', Translate.openGoogle);
+      $('btnOpenB').addEventListener('click', Translate.openBaidu);
+
+      $('chatSrc').addEventListener('input', Translate.genPrompt);
+      $('btnGenPrompt').addEventListener('click', Translate.genPrompt);
+      $('btnCopyPrompt').addEventListener('click', Translate.copyPrompt);
+      $('btnOpenChat').addEventListener('click', Translate.openChat);
+
+      Translate.updateGoogle();
+      Translate.genPrompt();
+    },
+  };
+
+  /* =========================
+     [JS:AMAZON] 亚马逊核算模块
+  ========================= */
+  const Amazon = {
+    toCny(amount, cur) { return amount * FX.rateToCny(cur); },
+    fromCny(cny, cur) {
+      if (cur === '¥') return cny;
+      const r = FX.rateToCny(cur);
+      return r > 0 ? cny / r : 0;
+    },
+    /* ---- FBA 模式（去掉下拉框，靠“输入/聚焦”自动选中） v1.2.30 ---- */
+    fbaMode: 'amount', // 'amount' | 'percent' | 'auto'
+    setFbaMode(mode) {
+      Amazon.fbaMode = (mode === 'percent' || mode === 'auto') ? mode : 'amount';
+      const row = $('fbaRow');
+      if (!row) return;
+      row.querySelectorAll('.fbaModeBox').forEach(box => {
+        box.classList.toggle('active', box.dataset.mode === Amazon.fbaMode);
+      });
+    },
+    detectFbaMode() {
+      // 1) 若之前已选中（聚焦/输入触发），直接用
+      if (Amazon.fbaMode) return Amazon.fbaMode;
+
+      // 2) 否则根据当前值做兜底判断
+      const amount = num($('fbaAmount')?.value);
+      const pct = num($('fbaPct')?.value);
+      const per = num($('fbaPerKg')?.value);
+      const fixed = num($('fbaFixed')?.value);
+
+      if (pct > 0) return 'percent';
+      if (per > 0 || fixed > 0) return 'auto';
+      if (amount > 0) return 'amount';
+      return 'amount';
+    },
+    update() {
+      const sellCur = $('sellCur').value;
+      // v1.2.75: keep FBA unit display in sync with sell currency
+      const unitEl = $('fbaAmountUnit');
+      if(unitEl) unitEl.textContent = sellCur;
+
+      const buyCur = $('buyCur').value;
+      const sell = num($('sellPrice').value);
+      const buy = num($('buyCost').value);
+
+      const sellCny = Amazon.toCny(sell, sellCur);
+      const buyCny = Amazon.toCny(buy, buyCur);
+
+      const wt = num($('wtKg').value);
+      const L = num($('lenCm').value);
+      const W = num($('widCm').value);
+      const H = num($('heiCm').value);
+      const div = Math.max(1, num($('volDiv').value) || 6000);
+      const volW = (L > 0 && W > 0 && H > 0) ? (L * W * H) / div : 0;
+      const chargeW = Math.max(wt, volW);
+
+      // v1.2.75: VAT region (US=0, EU=enable VAT input)
+      const vatRegion = $('vatRegion') ? $('vatRegion').value : 'EU';
+      if (vatRegion === 'US') {
+        $('vatPct').value = '0';
+        $('vatPct').disabled = true;
+      } else {
+        $('vatPct').disabled = false;
+        if (num($('vatPct').value) <= 0) $('vatPct').value = '19';
+      }
+
+      const shipPerKg = num($('shipPerKg').value);
+      const shipFixed = num($('shipFixed').value);
+      const shipCny = (shipFixed > 0)
+        ? shipFixed
+        : (shipPerKg > 0 ? chargeW * shipPerKg : 0); // 固定头程优先（与计费重二选一）
+
+      const refCny = sellCny * (num($('refPct').value) / 100);
+      const vatCny = sellCny * (num($('vatPct').value) / 100);
+      const adCny = sellCny * (num($('adPct').value) / 100);
+      const whCfgFee = num($('whCfgFee').value) || 0; // 仓库配置费（按售价币种）
+      const whCfgCny = Amazon.toCny(whCfgFee, sellCur);const whCfgUnit = $('whCfgUnit');
+      if(whCfgUnit) whCfgUnit.textContent = sellCur;
+const retCny = sellCny * (num($('retRate').value) / 100);
+
+      const mode = Amazon.detectFbaMode();
+      let fbaCny = 0;
+      if (mode === 'percent') {
+        fbaCny = sellCny * (num($('fbaPct').value) / 100);
+      } else if (mode === 'auto') {
+        const per = num($('fbaPerKg').value);
+        const fixed = num($('fbaFixed').value);
+        fbaCny = Amazon.toCny(chargeW * per + fixed, sellCur);
+      } else {
+        fbaCny = Amazon.toCny(num($('fbaAmount').value), sellCur);
+      }
+
+      const totalCost = buyCny + shipCny + refCny + vatCny + adCny + whCfgCny + fbaCny + retCny;
+      const profitCny = sellCny - totalCost;
+      const margin = sellCny > 0 ? profitCny / sellCny : 0;
+
+      
+
+      // v1.2.75：选品判断—最大可承受广告占比（Ad Headroom） & 结论
+      const nonAdCost = totalCost - adCny; // 排除广告后的成本
+      let maxAdPct = sellCny > 0 ? (1 - (nonAdCost / sellCny)) * 100 : 0;
+      if (!isFinite(maxAdPct)) maxAdPct = 0;
+      maxAdPct = Math.max(0, Math.min(100, maxAdPct));
+
+      const realAdPct = num($('adPct').value);
+      let verdict = '—', vCls = '';
+      if (sellCny <= 0){
+        verdict = '—';
+      } else if (realAdPct <= maxAdPct - 5){
+        verdict = '值得干';
+        vCls = 'good';
+      } else if (realAdPct <= maxAdPct){
+        verdict = '极限可做';
+        vCls = 'warn';
+      } else {
+        verdict = '不值得干';
+        vCls = 'bad';
+      }
+
+      // v1.2.75: FBA display amounts (sell currency)
+      try{
+        const sell = num($('sellPrice').value);
+        const pct = num($('fbaPct').value);
+        const per = num($('fbaPerKg').value);
+        const fixed = num($('fbaFixed').value);
+        const pctAmt = (sell > 0 && pct > 0) ? (sell * pct / 100) : 0;
+        const autoAmt = ((per > 0 || fixed > 0) ? (chargeW * Math.max(0, per) + Math.max(0, fixed)) : 0);
+
+        const pctEl = $('fbaPctAmt');
+        if(pctEl){
+          pctEl.textContent = (sell > 0 && pct > 0) ? `≈ ${pctAmt.toFixed(2)}${sellCur}` : '—';
+        }
+        const autoEl = $('fbaAutoAmt');
+        if(autoEl){
+          autoEl.textContent = ((per > 0 || fixed > 0) ? `≈ ${autoAmt.toFixed(2)}${sellCur}` : '—');
+        }
+      }catch{}
+$('oChargeW').textContent = chargeW.toFixed(3);
+      $('oShip').textContent = fmt('¥', shipCny);
+      $('oRef').textContent = fmt(sellCur, Amazon.fromCny(refCny, sellCur));
+      $('oVat').textContent = fmt(sellCur, Amazon.fromCny(vatCny, sellCur));
+      $('oAd').textContent = fmt(sellCur, Amazon.fromCny(adCny, sellCur));
+      
+      const whEl = $('oWhCfg');
+      if(whEl) whEl.textContent = fmt(sellCur, Amazon.fromCny(whCfgCny, sellCur));
+$('oFba').textContent = fmt(sellCur, Amazon.fromCny(fbaCny, sellCur));
+      $('oProfit').textContent = fmt(sellCur, Amazon.fromCny(profitCny, sellCur));
+      $('oMargin').textContent = `${(margin * 100).toFixed(2)}%`;
+      // v1.2.75：右侧浮窗 KPI（方案C）
+      try{
+        const box = document.getElementById('amzFloat');
+        if(box && !box.classList.contains('show')) box.classList.add('show');
+
+        const fp = document.getElementById('amzFProfit');
+        const fm = document.getElementById('amzFMargin');
+        const fa = document.getElementById('amzFAdSpace');
+        const fv = document.getElementById('amzFVerdict');
+
+        if(fp) fp.textContent = $('oProfit').textContent;
+        if(fm) fm.textContent = `${(margin * 100).toFixed(1)}%`;
+        if(fa) fa.textContent = `${maxAdPct.toFixed(1)}%`;
+
+        if(fv){
+          const adNow = num($('adPct').value) || 0;
+          if(!Number.isFinite(sellCny) || sellCny<=0){
+            fv.textContent = '未就绪';
+            fv.classList.remove('good','warn','bad');
+          }else{
+            const ok = (maxAdPct >= adNow);
+            fv.textContent = ok ? '可做' : '谨慎';
+            fv.classList.remove('good','warn','bad');
+            fv.classList.add(ok ? 'good' : 'warn');
+          }
+        }
+        if(fp){ fp.classList.toggle('pos', profitCny > 0); fp.classList.toggle('neg', profitCny < 0); }
+      }catch{}
+
+
+      try{
+        const maxEl = $('oMaxAdPct');
+        if(maxEl) maxEl.textContent = `${maxAdPct.toFixed(1)}%`;
+        const vEl = $('oAdVerdict');
+        if(vEl){
+          vEl.textContent = verdict;
+          vEl.classList.remove('good','warn','bad');
+          if(vCls) vEl.classList.add(vCls);
+        }
+      }catch{}
+
+      // v1.2.31：利润正负颜色提示
+      try{
+        const pEl = $('oProfit');
+        const mEl = $('oMargin');
+        if(pEl){ pEl.classList.toggle('pos', profitCny > 0); pEl.classList.toggle('neg', profitCny < 0); }
+        if(mEl){ mEl.classList.toggle('pos', margin > 0); mEl.classList.toggle('neg', margin < 0); }
+      }catch{}
+
+      $('amazonNote').textContent = sell > 0
+        ? `说明：退货成本按“退货率×售价”做了简化估算（当前 ${($('retRate').value || '0')}%）。如需更精细，可再加“退货损失占比/处理费”。`
+        : '';
+    },
+    clear() {
+      $('sellCur').value = '$';
+      $('sellPrice').value = '';
+      $('buyCur').value = '¥';
+      $('buyCost').value = '';
+
+      $('wtKg').value = '';
+      $('lenCm').value = '';
+      $('widCm').value = '';
+      $('heiCm').value = '';
+
+      $('volDiv').value = '6000';
+      $('shipPerKg').value = '10';
+      $('shipFixed').value = '0';
+
+      $('refPct').value = '15';
+      $('vatRegion').value = 'EU';
+      $('vatPct').value = '19';
+      $('vatPct').disabled = false;
+      $('retRate').value = '5';
+      $('adPct').value = '15';
+      $('whCfgFee').value = '1';
+      $('fbaAmount').value = '';
+      $('fbaPct').value = '';
+      $('fbaPerKg').value = '';
+      $('fbaFixed').value = '';
+
+      Amazon.setFbaMode('amount');
+      Amazon.update();
+    },
+    init() {
+      const ids = [
+        'sellCur','sellPrice','buyCur','buyCost',
+        'usdToCny','eurToCny','gbpToCny',
+        'wtKg','lenCm','widCm','heiCm',
+        'volDiv','shipPerKg','shipFixed',
+        'refPct','vatPct','retRate','adPct',
+        'fbaAmount','fbaPct','fbaPerKg','fbaFixed'
+      ];
+      ids.forEach(id => { const el = $(id); if(!el) return; el.addEventListener('input', Amazon.update); el.addEventListener('change', Amazon.update); el.addEventListener('keyup', Amazon.update); });
+
+      // v1.2.30：FBA 模式不再用下拉框，改为“输入/聚焦即选中”
+      const fbaMap = { amount:['fbaAmount'], percent:['fbaPct'], auto:['fbaPerKg','fbaFixed'] };
+      Object.entries(fbaMap).forEach(([mode, arr])=>{
+        arr.forEach(id=>{
+          const el = $(id);
+          if(!el) return;
+          el.addEventListener('focus', ()=> Amazon.setFbaMode(mode));
+          el.addEventListener('input', ()=> Amazon.setFbaMode(mode));
+          el.addEventListener('change', ()=> Amazon.setFbaMode(mode));
+        });
+      });
+      Amazon.setFbaMode(Amazon.detectFbaMode());
+
+      // v1.2.31：点击整张卡片也可切换模式（并自动聚焦到该卡片的第一个输入框）
+      try{
+        const row = $('fbaRow');
+        if(row && !row.__cardClick){
+          row.__cardClick = true;
+          row.querySelectorAll('.fbaModeBox').forEach(box=>{
+            box.addEventListener('click', (e)=>{
+              // 输入框本身点击不额外处理（避免重复 focus）
+              const tag = (e.target && e.target.tagName) ? e.target.tagName.toLowerCase() : '';
+              if(tag === 'input' || tag === 'textarea' || tag === 'select') return;
+              const mode = box.dataset.mode;
+              Amazon.setFbaMode(mode);
+              const first = box.querySelector('input');
+              if(first) first.focus();
+              Amazon.update();
+            });
+          });
+        }
+      }catch{}
+
+      const __ca=$('clearAmazon'); if(__ca) __ca.addEventListener('click', Amazon.clear);
+      Amazon.update();
+    },
+  };
+
+  /* =========================
+     [JS:APP] 导航 & 初始化
+  ========================= */
+  const App = {
+    showPanel(id) {
+      document.querySelectorAll('.panel').forEach(p => p.classList.toggle('active', p.id === id));
+      document.querySelectorAll('.nav button').forEach(b => b.classList.toggle('active', b.dataset.panel === id));
+    },
+    initNav() {
+      const sidebar = document.querySelector('.sidebar');
+      const backdrop = $('backdrop');
+      const btnMenu = $('btnMenu');
+      const isMobile = () => window.matchMedia && window.matchMedia('(max-width:720px)').matches;
+
+      const openMenu = () => {
+        if (!sidebar) return;
+        sidebar.classList.add('open');
+        if (backdrop) backdrop.classList.add('show');
+      };
+      const closeMenu = () => {
+        if (!sidebar) return;
+        sidebar.classList.remove('open');
+        if (backdrop) backdrop.classList.remove('show');
+      };
+
+      // 保留原行为：点击切换面板
+      document.querySelectorAll('.nav button').forEach(b => b.addEventListener('click', () => {
+        App.showPanel(b.dataset.panel);
+        if (isMobile()) closeMenu();
+      }));
+
+      // 手机端：菜单按钮与遮罩
+      if (btnMenu) btnMenu.addEventListener('click', () => {
+        if (!sidebar) return;
+        const opened = sidebar.classList.contains('open');
+        if (opened) closeMenu(); else openMenu();
+      });
+      if (backdrop) backdrop.addEventListener('click', closeMenu);
+
+      // 桌面端自动清理抽屉状态
+      window.addEventListener('resize', () => {
+        if (!isMobile()) closeMenu();
+      });
+    },
+    syncVersionUI() {
+      document.title = `运营工具箱 v${APP_VERSION}`;
+      const verEl = $('verText');
+      if (verEl) verEl.textContent = APP_VERSION;
+      const verElM = $('verTextM');
+      if (verElM) verElM.textContent = APP_VERSION;
+    },
+    init() {
+      Theme.init();
+      App.syncVersionUI();
+      App.initNav();
+
+      Unit.init();
+      Count.init();
+      Translate.init();
+      Amazon.init();
+
+      // [HOTFIX] v1.2.28 Aurora: ensure Translate tabs & Amazon calc always respond even if individual listeners fail
+      // 1) Translate: delegated click fallback
+      try {
+        const seg = document.getElementById('tSeg');
+        if (seg && !seg.__delegated) {
+          seg.__delegated = true;
+          seg.addEventListener('click', (ev) => {
+            const btn = ev.target && ev.target.closest && ev.target.closest('button[data-t]');
+            if (!btn) return;
+            Translate.setTab(btn.dataset.t);
+          });
+        }
+      } catch {}
+
+      // 2) Amazon: delegated input/change fallback (covers any missed bindings)
+      try {
+        const amz = document.getElementById('amazon');
+        if (amz && !amz.__delegated) {
+          amz.__delegated = true;
+          const fn = () => Amazon.update();
+          amz.addEventListener('input', fn);
+          amz.addEventListener('change', fn);
+          amz.addEventListener('keyup', fn);
+        }
+      } catch {}
+
+      // 启动时：先读本地缓存，再尝试拉取最新汇率
+      const last = FX.load();
+      if (last) FX.apply(last.usd, last.eur, last.gbp);
+      FX.fetchLatest(true);
+
+      // Debug：便于你在控制台定位/调用
+      window.showPanel = App.showPanel;
+      window.Toolbox = { Config, FX, Unit, Count, Translate, Amazon, App };
+
+      // 轻量自检（不影响功能）
+      console.assert(typeof window.showPanel === 'function', 'showPanel should exist');
+      console.assert(Count.toTitleCase('usb led light for the home') === 'USB LED Light for the Home', 'TitleCase B');
+      console.assert(FX.convert(10, '¥', '¥') === 10, 'FX identity');
+      console.assert(Translate.genPrompt && typeof Translate.genPrompt === 'function', 'Translate.genPrompt exists');
+    },
+  };
+
+  document.addEventListener('DOMContentLoaded', App.init);
+})();
+</script>
+<script>/* [NAV:ICONS] v1.0.32 - 安全追加图标 */
+
+  // ===== [NAV:ICONS] v1.0.32 - non-destructive icon prepend =====
+  (function(){
+    const iconMap = {
+      unit: "🧮",        // 单位换算
+      count: "🔤",       // 字符处理
+      translate: "🌐",   // 翻译
+      amazon: "📦"       // 亚马逊核算
+    };
+    function ensureIcons(){
+      document.querySelectorAll(".nav button[data-panel]").forEach(btn=>{
+        if(btn.querySelector(".btn-ic")) return;
+        const key = btn.getAttribute("data-panel");
+        const ic = document.createElement("span");
+        ic.className = "btn-ic";
+        ic.textContent = iconMap[key] || "🧰";
+        btn.insertBefore(ic, btn.firstChild);
+      });
+    }
+    if(document.readyState === "loading"){
+      document.addEventListener("DOMContentLoaded", ensureIcons);
+    }else{
+      ensureIcons();
+    }
+  })();
+</script>
+<!-- [UI:LAYOUT] END -->
+</div>
+<script>
+
+/* =========================
+   v1.2.75 — Amazon: 状态点 + FBA右侧金额展示 + VAT美区不标点
+========================= */
+(function(){
+  const amazon = document.getElementById('amazon');
+  if(!amazon) return;
+
+  const $ = (id)=>document.getElementById(id);
+  const s = (el)=> (el && el.value!=null) ? String(el.value).trim() : '';
+  const n = (el)=>{
+    const v = s(el);
+    if(v==='') return NaN;
+    const num = Number(v);
+    return Number.isFinite(num) ? num : NaN;
+  };
+  const filledPos = (el)=>{ const v=n(el); return Number.isFinite(v) && v>0; };
+  const filledNonPos = (el)=>{ const v=n(el); return Number.isFinite(v) && v<=0; };
+  const labelOf = (el)=> el ? (el.closest('label')||null) : null;
+
+  const DEFAULT_IDS = ['usdToCny','eurToCny','gbpToCny','volDiv','shipPerKg','vatPct','refPct','retRate','adPct','whCfgFee'];
+  const ALWAYS_REQ = ['sellPrice','buyCost'];
+  const WT = 'wtKg';
+  const DIMS = ['lenCm','widCm','heiCm'];
+
+  function rememberDefaults(){
+    DEFAULT_IDS.forEach(id=>{
+      const el = $(id);
+      if(el && el.dataset.defaultValue==null){
+        el.dataset.defaultValue = s(el);
+      }
+    });
+  }
+
+  function setLabelState(lab, state){
+    if(!lab) return;
+    lab.classList.remove('st-dot','st-red','st-yellow','st-green');
+    if(!state) return;
+    lab.classList.add('st-dot');
+    if(state==='red') lab.classList.add('st-red');
+    if(state==='yellow') lab.classList.add('st-yellow');
+    if(state==='green') lab.classList.add('st-green');
+  }
+  function setBoxState(box, state){
+    if(!box) return;
+    box.classList.remove('st-dot','st-red','st-yellow','st-green');
+    if(!state) return;
+    box.classList.add('st-dot');
+    if(state==='red') box.classList.add('st-red');
+    if(state==='yellow') box.classList.add('st-yellow');
+    if(state==='green') box.classList.add('st-green');
+  }
+
+  function updateDots(){
+    // clear label states
+    amazon.querySelectorAll('label').forEach(l=>l.classList.remove('st-dot','st-red','st-yellow','st-green'));
+
+    const vr = $('vatRegion');
+    const vat = $('vatPct');
+    const isUS = !!(vr && vr.value==='US');
+
+    // any filled <=0 => red (except vat in US)
+    amazon.querySelectorAll('input[type="number"]').forEach(el=>{
+      if(el.id==='vatPct' && isUS) return;
+      const lab = labelOf(el);
+      if(!lab) return;
+      if(filledNonPos(el)) setLabelState(lab,'red');
+    });
+
+    // always required: empty or not >0 => red else green
+    ALWAYS_REQ.forEach(id=>{
+      const el = $(id);
+      if(!el) return;
+      const lab = labelOf(el);
+      const bad = (s(el)==='') || !filledPos(el);
+      if(bad) setLabelState(lab,'red');
+      else setLabelState(lab,'green');
+    });
+
+    // weight/size group: wt OR all dims
+    const wtEl = $(WT);
+    const dimEls = DIMS.map(id=>$(id));
+    const wtOk = wtEl ? filledPos(wtEl) : false;
+    const dimsOk = dimEls.every(e=>e && filledPos(e));
+    const groupOk = wtOk || dimsOk;
+    if(!groupOk){
+      [wtEl, ...dimEls].forEach(el=>{ if(el) setLabelState(labelOf(el),'red'); });
+    }else{
+      [wtEl, ...dimEls].forEach(el=>{
+        if(!el) return;
+        if(filledPos(el)) setLabelState(labelOf(el),'green');
+        else {
+          // optional empty => no dot (unless it was already red due to <=0)
+          const lab = labelOf(el);
+          if(lab && !lab.classList.contains('st-red')) setLabelState(lab,'');
+        }
+      });
+    }
+
+    // v1.2.75: 固定头程(每单) — 当重量/尺寸都没填时为必填；任一项填写完整后变为非必填(无点)
+    const shipFixedEl = $('shipFixed');
+    if(shipFixedEl){
+      const lab = labelOf(shipFixedEl);
+      if(!groupOk){
+        if(s(shipFixedEl)==='' || !filledPos(shipFixedEl)) setLabelState(lab,'red');
+        else setLabelState(lab,'green');
+      }else{
+        if(filledPos(shipFixedEl)) setLabelState(lab,'green');
+        else setLabelState(lab,'');
+      }
+    }
+
+    // defaults: unchanged & >0 => yellow; changed & >0 => green; empty => none; (except vat in US => none)
+    DEFAULT_IDS.forEach(id=>{
+      if(isUS && id==='vatPct') return;
+      const el = $(id);
+      if(!el) return;
+      const lab = labelOf(el);
+      if(!lab || lab.classList.contains('st-red')) return;
+      if(s(el)===''){ setLabelState(lab,''); return; }
+      if(!filledPos(el)){ setLabelState(lab,'red'); return; } // <=0 already handled, but keep safe
+      const def = (el.dataset.defaultValue ?? '').trim();
+      const cur = s(el);
+      if(def!=='' && cur===def) setLabelState(lab,'yellow');
+      else setLabelState(lab,'green');
+    });
+
+    // VAT US => no dot ever
+    if(isUS && vat){
+      const lab = labelOf(vat);
+      if(lab) setLabelState(lab,'');
+    }
+
+    // FBA outer dots: require at least one mode filled (>0)
+    const modeAmountOk = filledPos($('fbaAmount'));
+    const modePctOk = filledPos($('fbaPct'));
+    const modeAutoOk = filledPos($('fbaPerKg')) || filledPos($('fbaFixed'));
+    const anyFba = modeAmountOk || modePctOk || modeAutoOk;
+
+    const boxAmount = amazon.querySelector('#fbaRow .fbaModeBox[data-mode="amount"]');
+    const boxPct = amazon.querySelector('#fbaRow .fbaModeBox[data-mode="percent"]');
+    const boxAuto = amazon.querySelector('#fbaRow .fbaModeBox[data-mode="auto"]');
+
+    [boxAmount, boxPct, boxAuto].forEach(b=>setBoxState(b,''));
+    if(!anyFba){
+      [boxAmount, boxPct, boxAuto].forEach(b=>setBoxState(b,'red'));
+    }else{
+      if(modeAmountOk) setBoxState(boxAmount,'green');
+      if(modePctOk) setBoxState(boxPct,'green');
+      if(modeAutoOk) setBoxState(boxAuto,'green');
+    }
+
+    // Hide inner FBA label dots: keep clean
+    const fbaRow = $('fbaRow');
+    if(fbaRow){
+      fbaRow.querySelectorAll('label').forEach(l=>l.classList.remove('st-dot','st-red','st-yellow','st-green'));
+    }
+  }
+
+  function updateFbaAmounts(){
+    const sellCur = $('sellCur') ? $('sellCur').value : '$';
+    const unitEl = $('fbaAmountUnit');
+    if(unitEl) unitEl.textContent = sellCur;
+
+    const sell = n($('sellPrice'));
+    const amt = n($('fbaAmount'));
+    const pct = n($('fbaPct'));
+    const per = n($('fbaPerKg'));
+    const fixed = n($('fbaFixed'));
+
+    const amtShow = $('fbaAmountShow');
+    if(amtShow) amtShow.textContent = (Number.isFinite(amt) && amt>0) ? `≈ ${amt.toFixed(2)}${sellCur}` : '—';
+
+    const pctShow = $('fbaPctAmt');
+    const pctAmt = (Number.isFinite(sell) && sell>0 && Number.isFinite(pct) && pct>0) ? (sell * pct / 100) : 0;
+    if(pctShow) pctShow.textContent = (pctAmt>0) ? `≈ ${pctAmt.toFixed(2)}${sellCur}` : '—';
+
+    // charge weight from existing outputs if present, else compute from inputs
+    let chargeW = n($('oChargeW'));
+    if(!Number.isFinite(chargeW) || chargeW<=0){
+      const wt = n($('wtKg'));
+      const l = n($('lenCm')), w = n($('widCm')), h = n($('heiCm'));
+      const div = n($('volDiv'));
+      const volW = (Number.isFinite(l)&&Number.isFinite(w)&&Number.isFinite(h)&&Number.isFinite(div)&&div>0) ? (l*w*h/div) : 0;
+      chargeW = Math.max(Number.isFinite(wt)?wt:0, volW);
+    }
+    const autoAmt = ((Number.isFinite(per)&&per>0)||(Number.isFinite(fixed)&&fixed>0)) ? (Math.max(0,chargeW)*Math.max(0,Number.isFinite(per)?per:0) + Math.max(0,Number.isFinite(fixed)?fixed:0)) : 0;
+    const autoShow = $('fbaAutoAmt');
+    if(autoShow) autoShow.textContent = (autoAmt>0) ? `≈ ${autoAmt.toFixed(2)}${sellCur}` : '—';
+  }
+
+  function updateAll(){
+    updateFbaAmounts();
+    updateDots();
+  }
+
+  function attach(){
+    rememberDefaults();
+    amazon.querySelectorAll('input,select,textarea').forEach(el=>{
+      el.addEventListener('input', updateAll);
+      el.addEventListener('change', updateAll);
+    });
+    const clearBtn = $('clearAmazon');
+    if(clearBtn && !clearBtn.__v1252){
+      clearBtn.addEventListener('click', ()=>setTimeout(updateAll,0));
+      clearBtn.__v1252 = true;
+    }
+    updateAll();
+  }
+
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', attach);
+  else attach();
+})();
+
+</script>
+<script>
+
+/* =========================
+   v1.2.75 — FX 更新标记（不侵入现有逻辑）
+========================= */
+(function(){
+  function today(){
+    const d = new Date();
+    const y = d.getFullYear();
+    const m = String(d.getMonth()+1).padStart(2,'0');
+    const da = String(d.getDate()).padStart(2,'0');
+    return `${y}-${m}-${da}`;
+  }
+  function showBadge(){
+    const b = document.getElementById('fxUpdatedBadge');
+    const d = document.getElementById('fxUpdatedDate');
+    if(b && d){
+      d.textContent = today();
+      b.style.display = 'inline-block';
+    }
+  }
+  // Expose a helper for existing fetch logic (if present)
+  window.markFxUpdated = function(){
+    showBadge();
+  };
+
+  // Fallback: observe FX inputs changes that look programmatic (multiple set at once)
+  const fxIds = ['usdToCny','eurToCny','gbpToCny'];
+  const els = fxIds.map(id=>document.getElementById(id)).filter(Boolean);
+  if(els.length){
+    let timer = null;
+    els.forEach(el=>{
+      el.addEventListener('change', ()=>{
+        clearTimeout(timer);
+        timer = setTimeout(showBadge, 200);
+      });
+    });
+  }
+})();
+
+</script>
+<script>
+
+/* =========================
+   v1.2.75 — 汇率已更新标记（核算页，强制可靠显示）
+========================= */
+(function(){
+  function today(){
+    const d = new Date();
+    const y = d.getFullYear();
+    const m = String(d.getMonth()+1).padStart(2,'0');
+    const da = String(d.getDate()).padStart(2,'0');
+    return `${y}-${m}-${da}`;
+  }
+  function showBadge(){
+    const b = document.getElementById('fxUpdatedBadge');
+    const d = document.getElementById('fxUpdatedDate');
+    if(b && d){
+      d.textContent = today();
+      b.style.display = 'inline-block';
+    }
+  }
+
+  // 1) When clicking "获取最新汇率"，在短延迟后显示（不依赖 fetch 内部实现）
+  const btn = document.getElementById('btnFx');
+  if(btn){
+    btn.addEventListener('click', ()=>{
+      setTimeout(showBadge, 800);
+    });
+  }
+
+  // 2) When any FX input changes (programmatic or manual)
+  const fxIds = ['usdToCny','eurToCny','gbpToCny'];
+  fxIds.forEach(id=>{
+    const el = document.getElementById(id);
+    if(!el) return;
+    el.addEventListener('input', showBadge);
+    el.addEventListener('change', showBadge);
+  });
+
+  // Expose for manual call if needed
+  window.markFxUpdated = showBadge;
+})();
+
+</script>
+<script>
+
+/* =========================
+   v1.2.75 — 汇率已更新标记（核算页：按钮/变化/轮询 三保险）
+========================= */
+(function(){
+  function today(){
+    const d = new Date();
+    const y = d.getFullYear();
+    const m = String(d.getMonth()+1).padStart(2,'0');
+    const da = String(d.getDate()).padStart(2,'0');
+    return `${y}-${m}-${da}`;
+  }
+  function showBadge(){
+    const b = document.getElementById('fxUpdatedBadge');
+    const d = document.getElementById('fxUpdatedDate');
+    if(b && d){
+      d.textContent = today();
+      b.style.display = 'inline-flex';
+      b.style.alignItems = 'center';
+      b.style.gap = '4px';
+    }
+  }
+
+  const fxIds = ['usdToCny','eurToCny','gbpToCny'];
+  const els = fxIds.map(id=>document.getElementById(id)).filter(Boolean);
+  if(!els.length) return;
+
+  // record initial values (page load)
+  const init = els.map(el=>String(el.value ?? ''));
+
+  // 1) click "获取最新汇率" -> show after a short delay
+  const btn = document.getElementById('btnFx');
+  if(btn){
+    btn.addEventListener('click', ()=> setTimeout(showBadge, 600));
+  }
+
+  // 2) any user/programmatic event that actually fires input/change
+  els.forEach(el=>{
+    el.addEventListener('input', showBadge);
+    el.addEventListener('change', showBadge);
+  });
+
+  // 3) polling: if values changed compared to initial (programmatic set without events), show once
+  let shown = false;
+  const timer = setInterval(()=>{
+    if(shown) return;
+    for(let i=0;i<els.length;i++){
+      const cur = String(els[i].value ?? '');
+      if(cur !== init[i]){
+        shown = true;
+        showBadge();
+        clearInterval(timer);
+        break;
+      }
+    }
+  }, 500);
+
+  window.markFxUpdated = showBadge;
+})();
+
+</script>
+
+  <!-- =========================
+       v1.2.75 — Amazon 右侧浮窗结果（方案C）
+       仅展示：利润 / 利润率 / 广告空间 / 结论（不改原结果区）
+  ========================== -->
+  <div id="amzFloat" class="amzFloat" aria-hidden="true">
+    <div class="amzFloatHead">
+      <div class="t">核算结果 <span class="pill">浮窗</span></div>
+      <button id="amzFloatToggle" class="amzFloatToggle" type="button" aria-label="折叠/展开">▾</button>
+    </div>
+    <div id="amzFloatBody" class="amzFloatBody">
+      <div class="row">
+        <div class="k">利润</div><div class="v" id="amzFProfit">—</div>
+      </div>
+      <div class="row">
+        <div class="k">利润率</div><div class="v" id="amzFMargin">—</div>
+      </div>
+      <div class="row">
+        <div class="k">广告空间</div><div class="v" id="amzFAdSpace">—</div>
+      </div>
+      <div class="row">
+        <div class="k">结论</div><div class="v" id="amzFVerdict">未就绪</div>
+      </div>
+    </div>
+  </div>
+
+<script>
+
+/* =========================
+   v1.2.75 — 浮窗交互：折叠/展开 + 未就绪隐藏
+========================= */
+(function(){
+  const box = document.getElementById('amzFloat');
+  const btn = document.getElementById('amzFloatToggle');
+  if(!box || !btn) return;
+
+  btn.addEventListener('click', ()=>{
+    box.classList.toggle('collapsed');
+  });
+
+  // Start hidden until first calc updates it
+  box.classList.remove('show');
+
+  // If Amazon module is not on screen at all, keep it shown anyway (user asked always visible).
+  // But when no price entered, keep values as not ready.
+})();
+
+</script>
+<script>
+
+/* =========================
+   v1.2.75 — 浮窗：仅核算模块显示 + 可拖动（支持触控）+ 位置记忆
+========================= */
+(function(){
+  const box = document.getElementById('amzFloat');
+  const head = box ? box.querySelector('.amzFloatHead') : null;
+  const btn = document.getElementById('amzFloatToggle');
+  const amz = document.getElementById('amazon');
+  if(!box || !head || !btn || !amz) return;
+
+  // 1) 折叠/展开
+  btn.addEventListener('click', (e)=>{
+    e.stopPropagation();
+    box.classList.toggle('collapsed');
+    localStorage.setItem('amzFloatCollapsed', box.classList.contains('collapsed') ? '1' : '0');
+  });
+  if(localStorage.getItem('amzFloatCollapsed')==='1') box.classList.add('collapsed');
+
+  // 2) 仅核算模块显示：IntersectionObserver
+  const show = ()=> box.classList.add('show');
+  const hide = ()=> box.classList.remove('show');
+  const io = new IntersectionObserver((entries)=>{
+    const en = entries[0];
+    if(en && en.isIntersecting) show(); else hide();
+  }, { threshold: 0.12 });
+  io.observe(amz);
+
+  // 3) 拖动（Pointer Events：鼠标 + 触控）
+  const KEY = 'amzFloatPosV1';
+  function clamp(v, min, max){ return Math.max(min, Math.min(max, v)); }
+  function applyPos(x, y){
+    // switch to left/top positioning for stability
+    box.style.left = x + 'px';
+    box.style.top = y + 'px';
+    box.style.right = 'auto';
+    box.style.bottom = 'auto';
+  }
+  // restore
+  try{
+    const raw = localStorage.getItem(KEY);
+    if(raw){
+      const p = JSON.parse(raw);
+      if(Number.isFinite(p.x) && Number.isFinite(p.y)) applyPos(p.x, p.y);
+    }
+  }catch{}
+
+  let dragging = false;
+  let startX = 0, startY = 0;
+  let baseX = 0, baseY = 0;
+
+  head.addEventListener('pointerdown', (e)=>{
+    // ignore if clicking the toggle
+    if(e.target === btn) return;
+    dragging = true;
+    head.setPointerCapture(e.pointerId);
+    const r = box.getBoundingClientRect();
+    startX = e.clientX; startY = e.clientY;
+    baseX = r.left; baseY = r.top;
+  });
+
+  head.addEventListener('pointermove', (e)=>{
+    if(!dragging) return;
+    const dx = e.clientX - startX;
+    const dy = e.clientY - startY;
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+    const bw = box.offsetWidth;
+    const bh = box.offsetHeight;
+    const x = clamp(baseX + dx, 8, vw - bw - 8);
+    const y = clamp(baseY + dy, 8, vh - bh - 8);
+    applyPos(x, y);
+  });
+
+  const endDrag = (e)=>{
+    if(!dragging) return;
+    dragging = false;
+    try{
+      const r = box.getBoundingClientRect();
+      localStorage.setItem(KEY, JSON.stringify({x: Math.round(r.left), y: Math.round(r.top)}));
+    }catch{}
+  };
+  head.addEventListener('pointerup', endDrag);
+  head.addEventListener('pointercancel', endDrag);
+
+  // keep in viewport after resize
+  window.addEventListener('resize', ()=>{
+    const r = box.getBoundingClientRect();
+    const vw = window.innerWidth, vh = window.innerHeight;
+    const bw = box.offsetWidth, bh = box.offsetHeight;
+    const x = clamp(r.left, 8, vw - bw - 8);
+    const y = clamp(r.top, 8, vh - bh - 8);
+    applyPos(x, y);
+  });
+})();
+
+</script>
+<script>
+
+/* =========================
+   v1.2.75 — 浮窗：仅核算模块显示 + 可拖动 + 起始位置贴合右上说明下方 + 收起按钮修复
+========================= */
+(function(){
+  const box = document.getElementById('amzFloat');
+  const head = box ? box.querySelector('.amzFloatHead') : null;
+  const btn = document.getElementById('amzFloatToggle');
+  const amz = document.getElementById('amazon');
+  const legend = document.getElementById('amzLegend');
+  if(!box || !head || !btn || !amz) return;
+
+  const KEY_POS = 'amzFloatPosV2';
+  const KEY_COL = 'amzFloatCollapsed';
+
+  // 1) 折叠/展开（修复：按钮点击不被拖拽捕获）
+  btn.addEventListener('click', (e)=>{
+    e.stopPropagation();
+    box.classList.toggle('collapsed');
+    localStorage.setItem(KEY_COL, box.classList.contains('collapsed') ? '1' : '0');
+  });
+  if(localStorage.getItem(KEY_COL)==='1') box.classList.add('collapsed');
+
+  // helpers
+  function clamp(v, min, max){ return Math.max(min, Math.min(max, v)); }
+  function applyPos(x, y){
+    box.style.left = x + 'px';
+    box.style.top = y + 'px';
+    box.style.right = 'auto';
+    box.style.bottom = 'auto';
+  }
+  function placeUnderLegend(){
+    // place top-left of float aligned to legend's right edge, just under it
+    if(!legend) return;
+    const lr = legend.getBoundingClientRect();
+    const bw = box.offsetWidth || 272;
+    const vw = window.innerWidth;
+    const x = clamp(lr.right - bw, 8, vw - bw - 8);
+    const y = clamp(lr.bottom + 10, 8, window.innerHeight - (box.offsetHeight||200) - 8);
+    applyPos(x, y);
+  }
+
+  // 2) 恢复位置：有记忆用记忆；否则放到右上说明下方
+  let restored = false;
+  try{
+    const raw = localStorage.getItem(KEY_POS);
+    if(raw){
+      const p = JSON.parse(raw);
+      if(Number.isFinite(p.x) && Number.isFinite(p.y)){
+        applyPos(p.x, p.y);
+        restored = true;
+      }
+    }
+  }catch{}
+  // 初始不主动摆放（避免非核算页也计算位置）；进入核算页时再摆放
+
+  // 3) 仅核算页面显示：仅当「amazon 面板」为 active 才显示
+  function syncVisible(){
+    const cur = document.querySelector('.panel.active');
+    const active = !!(cur && cur.id === 'amazon');
+    if(active) box.classList.add('show'); else box.classList.remove('show');// 初次进入核算页且无位置记忆时，贴合右上说明下方
+    if(active && !restored){
+      requestAnimationFrame(()=>placeUnderLegend());
+    }
+  }
+  // 初始化：默认隐藏（避免打开网页就出现）
+  box.classList.remove('show');
+
+  // 监听面板切换：nav 点击 & MutationObserver 双保险
+  document.querySelectorAll('.nav button[data-panel]').forEach(b=>{
+    b.addEventListener('click', ()=> setTimeout(syncVisible, 0));
+  });
+  const mo = new MutationObserver(syncVisible);
+  mo.observe(amz, { attributes:true, attributeFilter:['class'] });
+  syncVisible();
+  // 兜底：极轻量轮询，确保切换到其他模块必隐藏
+  setInterval(syncVisible, 300);
+
+
+  // 4) 拖动（Pointer Events：鼠标 + 触控）
+  let dragging = false;
+  let startX = 0, startY = 0;
+  let baseX = 0, baseY = 0;
+
+  head.addEventListener('pointerdown', (e)=>{
+    // if clicking toggle (or its inside), don't start drag
+    if(e.target && e.target.closest && e.target.closest('#amzFloatToggle')) return;
+    dragging = true;
+    head.setPointerCapture(e.pointerId);
+    const r = box.getBoundingClientRect();
+    startX = e.clientX; startY = e.clientY;
+    baseX = r.left; baseY = r.top;
+  });
+
+  head.addEventListener('pointermove', (e)=>{
+    if(!dragging) return;
+    const dx = e.clientX - startX;
+    const dy = e.clientY - startY;
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+    const bw = box.offsetWidth;
+    const bh = box.offsetHeight;
+    const x = clamp(baseX + dx, 8, vw - bw - 8);
+    const y = clamp(baseY + dy, 8, vh - bh - 8);
+    applyPos(x, y);
+  });
+
+  const endDrag = ()=>{
+    if(!dragging) return;
+    dragging = false;
+    try{
+      const r = box.getBoundingClientRect();
+      localStorage.setItem(KEY_POS, JSON.stringify({x: Math.round(r.left), y: Math.round(r.top)}));
+    }catch{}
+  };
+  head.addEventListener('pointerup', endDrag);
+  head.addEventListener('pointercancel', endDrag);
+
+  // keep in viewport after resize + also re-place under legend if not restored
+  window.addEventListener('resize', ()=>{
+    const r = box.getBoundingClientRect();
+    const vw = window.innerWidth, vh = window.innerHeight;
+    const bw = box.offsetWidth, bh = box.offsetHeight;
+    const x = clamp(r.left, 8, vw - bw - 8);
+    const y = clamp(r.top, 8, vh - bh - 8);
+    applyPos(x, y);
+  });
+
+  // expose helper
+  window.__placeAmzFloatUnderLegend = placeUnderLegend;
+})();
+
+</script>
+</body>
+</html>
